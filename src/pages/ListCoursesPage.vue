@@ -1,19 +1,23 @@
 <template>
-  <NavBar :canReturn="true" />
+  <NavBar :banner="banner" :menu="menu" />
   <div class="content">
-    <div class="content-section">
+    <div
+      class="content-section"
+      v-for="(cursocap, index) in cursos"
+      :key="index"
+    >
       <div class="content-header">
-        <h2>Zona UrbisFX Certificacion X</h2>
+        <h2>{{ cursocap.nombre }}</h2>
       </div>
       <SwiperCustom>
         <swiper-slide
           class="card"
-          v-for="(curso, index) in cursos"
-          :key="index"
+          v-for="capitulo in cursocap.capitulos"
+          :key="capitulo.id"
         >
-          <img :src="curso.miniatura" alt="img" />
+          <img :src="capitulo.miniatura" alt="img" />
           <div class="additional-info">
-            <h2>{{ curso.nombre }}</h2>
+            <h2>{{ capitulo.nombre }}</h2>
             <p>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin
               malesuada tellus sed dui vehicula suscipit. Vivamus aliquet
@@ -32,6 +36,7 @@ import { SwiperSlide } from 'swiper/vue';
 import NavBar from "@/components/NavBar.vue"
 import FooterH from "@/components/FooterH.vue"
 import SwiperCustom from '@/components/SwiperCustom.vue';
+import useCourses from "@/composables/useCourses"
 
 import "swiper/css";
 import "swiper/css/navigation";
@@ -43,37 +48,31 @@ export default {
     FooterH,
     SwiperCustom
   },
+  async mounted() {
+    try {
+      const { handleGetAllCourses} = useCourses();
+      const data = await handleGetAllCourses()
+      this.cursos = data.cursos
+      this.banner = data.banner
+      this.menu = data.menu
+    } catch(error) {
+      console.error('Error al obtener los cursos:', error);
+    }
+  },
   data() {
       return {
-      cursos: [
-        {
-         id: "",
-         nombre: "Curso de Desarrollo Web Completo",
-         miniatura: "https://academia.urbisfx.com/media/1_jL1yLQC.png",
-        },
-        {
-         id: "",
-         nombre: "Curso de Python para Principiantes",
-         miniatura: "https://academia.urbisfx.com/media/L%C3%ADneas_de_Negocio_1.png",
-        },
-        {
-         id: "",
-         nombre: "Curso de Desarrollo de Aplicaciones Móviles con React Native",
-         miniatura: "https://academia.urbisfx.com/media/3_tff7ZYh.png",
-        },
-        {
-         id: "",
-         nombre: "Curso de Desarrollo de Juegos con Unity",
-         miniatura: "https://academia.urbisfx.com/media/6_hQsTfcQ.png",
-        },
-        {
-         id: "",
-         nombre: "Curso de Desarrollo de Aplicaciones Empresariales con Java",
-         miniatura: "https://academia.urbisfx.com/media/5_gad0qHP.png",
-        }
+      certificados: [
+        'Certificado 1',
+        'Certificado 2',
+        'Certificado 3',
+        'Certificado 4',
+        'Certificado 5',
       ],
+      courses: [],
+      banner: {},
+      menu: []
     }
-  }
+  },
 };
 </script>
 

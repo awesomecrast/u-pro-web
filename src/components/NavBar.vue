@@ -9,39 +9,13 @@
         />
       </router-link>
 
-      <ul class="nav-links">
-        <li class="link">
-          <router-link :to="{ name: 'home' }">UrbisFX</router-link>
+      <ul class="nav-links" v-for="(item, index) in menu" :key="index">
+        <li class="link" v-if="item.tiene_icono === false">
+          <a :href="item.link">{{ item.nombre }}</a>
         </li>
-        <li class="link">
-          <router-link :to="{ name: 'home' }">Back Office</router-link>
-        </li>
-        <li class="link">
-          <router-link :to="{ name: 'home' }">Super Pamm</router-link>
-        </li>
-        <li class="link">
-          <router-link :to="{ name: 'home' }">Material de descarga</router-link>
-        </li>
-        <li class="link">
-          <a href="/"
-            ><img
-              src="https://academia.urbisfx.com/media/1_LOCYrwp.svg"
-              alt="facebook"
-          /></a>
-        </li>
-        <li class="link">
-          <a href="/"
-            ><img
-              src="https://academia.urbisfx.com/media/2_8iCiU1B.svg"
-              alt="facebook"
-          /></a>
-        </li>
-        <li class="link">
-          <a href="/"
-            ><img
-              src="https://academia.urbisfx.com/media/3_A4ciE69.svg"
-              alt="facebook"
-          /></a>
+
+        <li class="link" v-if="item.tiene_icono">
+          <a href="/"><img :src="item.icono" :alt="item.nombre" /></a>
         </li>
       </ul>
     </div>
@@ -195,11 +169,13 @@
     :src="videoSrc"
     @canplay="videoLoaded"
   ></video>
-  <div v-if="canReturn === true" class="banner-flot">
-    <h3>U-PRO</h3>
-    <h4>TU ACADEMIA DE TRADING</h4>
-    <h5>CONVIERTETE EN UN TRADER PROFESIONAL</h5>
-    <router-link :to="{ name: 'home' }"> U-PRO </router-link>
+  <div class="banner-flot">
+    <h3>{{ banner.titulo }}</h3>
+    <h4>{{ banner.subtitulo }}</h4>
+    <h5>{{ banner.texto }}</h5>
+    <a :href="banner.link_boton">
+      {{ banner.titulo_boton }}
+    </a>
   </div>
 </template>
 
@@ -216,9 +192,11 @@ export default {
     Bars3Icon
   },
   props: {
-    canReturn: {
-      type: Boolean,
-      default: true,
+    menu: {
+      type: Array,
+    },
+    banner: {
+      type: Object,
     }
   },
   data() {
