@@ -9,13 +9,13 @@
       <div
         class="card"
         v-for="(certificado, index) in certificados"
-        :key="index"
+        :key="certificado.id"
         @click="redirectToCertification(index + 1)"
+        :style="{
+          '--background-image': `url(https://academia.urbisfx.com/${certificado.gif})`,
+        }"
       >
-        <img
-          src="https://prod-ripcut-delivery.disney-plus.net/v1/variant/disney/FFA0BEBAC1406D88929497501C84019EBBA1B018D3F7C4C3C829F1810A24AD6E/scale?width=400&aspectRatio=1.78&format=png"
-          alt="logo"
-        />
+        <img :src="certificado.logo" :alt="certificado.nombre" />
       </div>
     </div>
 
@@ -71,19 +71,14 @@ export default {
       this.cursos = data.cursos
       this.banner = data.banner
       this.menu = data.menu
+      this.certificados = data.certificaciones
     } catch(error) {
       console.error('Error al obtener los cursos:', error);
     }
   },
   data() {
       return {
-      certificados: [
-        'Certificado 1',
-        'Certificado 2',
-        'Certificado 3',
-        'Certificado 4',
-        'Certificado 5',
-      ],
+      certificados: [],
       courses: [],
       banner: {},
       menu: []
@@ -155,7 +150,7 @@ export default {
 }
 
 .card:hover {
-  background-image: url("https://images-cdn.newscred.com/Zz04NjA3ZjljMjQ0ODkxMWViOWRjYzU1OGJkNjI1ZjVkZA==");
+  background-image: var(--background-image);
   background-size: cover;
   background-position: center;
   border: 4px solid #fff;
