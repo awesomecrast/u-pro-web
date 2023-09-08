@@ -12,7 +12,7 @@
         :key="certificado.id"
         @click="redirectToCertification(index + 1)"
         :style="{
-          '--background-image': `url(https://academia.urbisfx.com/${certificado.gif})`,
+          '--background-image': `url(https://academia.urbisfx.com${certificado.gif})`,
         }"
       >
         <img :src="certificado.logo" :alt="certificado.nombre" />
@@ -142,7 +142,7 @@ export default {
   align-items: center;
   justify-content: center;
   height: 12rem;
-  background: linear-gradient(rgb(48, 50, 62), rgb(30, 31, 42));
+  background: linear-gradient(#1a1a68,#000033);
   border-radius: 10px;
   /* box-shadow: rgba(0, 0, 0, 0.69) 0px 26px 30px -10px,
     rgba(0, 0, 0, 0.73) 0px 16px 10px -10px; */
