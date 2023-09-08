@@ -12,10 +12,14 @@
         :key="certificado.id"
         @click="redirectToCertification(index + 1)"
         :style="{
-          '--background-image': `url(https://academia.urbisfx.com${certificado.gif})`,
+          '--background-image': `url(${certificado.gif})`,
         }"
       >
-        <img :src="certificado.logo" :alt="certificado.nombre" />
+        <img
+          class="certification-img"
+          :src="certificado.logo"
+          :alt="certificado.nombre"
+        />
       </div>
     </div>
 
@@ -33,6 +37,7 @@
           class="card-course"
           v-for="capitulo in cursocap.capitulos"
           :key="capitulo.id"
+          @click="redirectToCourse(capitulo)"
         >
           <img class="course-miniatura" :src="capitulo.miniatura" alt="img" />
           <div class="additional-info">
@@ -88,6 +93,19 @@ export default {
     redirectToCertification(id) {
       this.$router.push({ name: 'certification', params: { id } });
     },
+    redirectToCourse(course) {
+      console.log(course)
+
+      if (course.nodo) {
+        window.open(`https://academia.urbisfx.com/node/mod/${course.id}`, '_self');
+      } else if (course.curso) {
+        window.open(`https://academia.urbisfx.com/cur/${course.id}`, '_self');
+      } else if (course.modulo) {
+        window.open(`https://academia.urbisfx.com/mod/${course.id}`, '_self');
+      } else {
+        window.open(`https://academia.urbisfx.com/cap/${course.id}`, '_self');
+      }
+    }
   },
 };
 </script>
@@ -115,6 +133,21 @@ export default {
   .content {
     top: 25vh;
   }
+
+  .content-cards {
+    display: flex !important;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .card {
+    width: 175px;
+  }
+
+  .card img {
+    width: 160px !important;
+  }
 }
 
 .content-header {
@@ -133,6 +166,8 @@ export default {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 16px;
+  row-gap: 2rem;
+  padding-bottom: 1rem;
 }
 
 .card {
@@ -142,22 +177,37 @@ export default {
   align-items: center;
   justify-content: center;
   height: 12rem;
-  background: linear-gradient(#1a1a68,#000033);
+  background: linear-gradient(#1a1a68, #000033);
   border-radius: 10px;
-  /* box-shadow: rgba(0, 0, 0, 0.69) 0px 26px 30px -10px,
-    rgba(0, 0, 0, 0.73) 0px 16px 10px -10px; */
+  box-shadow: rgba(0, 0, 0, 0.69) 0px 26px 30px -10px,
+    rgba(0, 0, 0, 0.73) 0px 16px 10px -10px;
   font-size: 2rem;
+  max-width: 350px;
+  max-height: 192px;
 }
 
 .card:hover {
   background-image: var(--background-image);
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
   border: 4px solid #fff;
 }
 
 .card img {
   width: 15rem;
+}
+
+@media (max-width: 500px) {
+  .card img {
+    width: 160px !important;
+  }
+}
+
+@media (max-width: 375px) {
+  .card {
+    width: 100% !important;
+  }
 }
 
 .card-course {
@@ -173,8 +223,6 @@ export default {
   position: relative;
   overflow: hidden;
   max-width: 341px;
-  /* box-shadow: rgba(0, 0, 0, 0.69) 0px 26px 30px -10px,
-    rgba(0, 0, 0, 0.73) 0px 16px 10px -10px; */
 }
 
 /* .course-miniatura {
@@ -209,7 +257,6 @@ export default {
 
 .card-course:hover .additional-info {
   opacity: 1;
-  /* Otros estilos que desees aplicar cuando se muestra la información adicional */
 }
 
 .card img {
