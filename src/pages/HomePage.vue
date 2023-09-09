@@ -6,39 +6,22 @@
   <div class="content">
     <!-- Content certifications -->
     <div class="content-cards">
-      <div
-        class="card"
-        v-for="(certificado, index) in certificados"
-        :key="certificado.id"
-        @click="redirectToCertification(index + 1)"
-        :style="{
+      <div class="card" v-for="(certificado, index) in certificados" :key="certificado.id"
+        @click="redirectToCertification(index + 1)" :style="{
           '--background-image': `url(${certificado.gif})`,
-        }"
-      >
-        <img
-          class="certification-img"
-          :src="certificado.logo"
-          :alt="certificado.nombre"
-        />
+        }">
+        <img class="certification-img" :src="certificado.logo" :alt="certificado.nombre" />
       </div>
     </div>
 
     <!-- Content courses -->
-    <div
-      class="content-section"
-      v-for="(cursocap, index) in cursos"
-      :key="index"
-    >
+    <div class="content-section" v-for="(cursocap, index) in cursos" :key="index">
       <div class="content-header">
         <h2>{{ cursocap.nombre }}</h2>
       </div>
       <SwiperCustom>
-        <swiper-slide
-          class="card-course"
-          v-for="capitulo in cursocap.capitulos"
-          :key="capitulo.id"
-          @click="redirectToCourse(capitulo)"
-        >
+        <swiper-slide class="card-course" v-for="capitulo in cursocap.capitulos" :key="capitulo.id"
+          @click="redirectToCourse(capitulo)">
           <img class="course-miniatura" :src="capitulo.miniatura" alt="img" />
           <div class="additional-info">
             <h2>{{ capitulo.nombre }}</h2>
@@ -71,18 +54,18 @@ export default {
   },
   async mounted() {
     try {
-      const { handleGetAllCourses} = useCourses();
+      const { handleGetAllCourses } = useCourses();
       const data = await handleGetAllCourses()
       this.cursos = data.cursos
       this.banner = data.banner
       this.menu = data.menu
       this.certificados = data.certificaciones
-    } catch(error) {
+    } catch (error) {
       console.error('Error al obtener los cursos:', error);
     }
   },
   data() {
-      return {
+    return {
       certificados: [],
       courses: [],
       banner: {},
@@ -123,6 +106,62 @@ export default {
   padding-top: 5rem;
 }
 
+
+
+.content-header {
+  margin-block: 2rem;
+  margin-inline: 2rem;
+}
+
+.content-header h2 {
+  color: #fff;
+  font-size: 1.25rem;
+  padding: 10px;
+  border-bottom: 1px solid gray;
+}
+
+.content-cards {
+  display: flex;
+  flex-wrap: wrap;
+  /* grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); */
+  justify-content: center;
+  /* gap: 16px;
+  row-gap: 2rem; */
+  padding-bottom: 1rem;
+}
+
+.card {
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 12rem;
+  background: linear-gradient(#1a1a68, #000033);
+  border-radius: 10px;
+  box-shadow: -2px 9px 16px 8px rgba(0,0,0,0.81);;
+  font-size: 2rem;
+  max-width: 350px;
+  max-height: 192px;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-bottom: 20px;
+}
+
+/* .card:hover {
+  background-image: var(--background-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border: 4px solid #fff;
+} */
+
+.card img {
+  width: 15rem;
+}
+
+
+
 @media (max-width: 950px) {
   .content {
     top: 46vh;
@@ -142,73 +181,76 @@ export default {
   }
 
   .card {
-    width: 175px;
+    width: 100px;
+    height: 70px !important;
+
   }
 
   .card img {
-    width: 160px !important;
+    width: 90px !important;
   }
 }
 
-.content-header {
-  margin-block: 2rem;
-  margin-inline: 2rem;
+
+
+@media (min-width: 1000px) {
+  .card img {
+    width: 200px !important;
+  }
+
+  .card {
+    width: 250px !important;
+    height: 175px !important;
+  }
 }
 
-.content-header h2 {
-  color: #fff;
-  font-size: 1.25rem;
-  padding: 10px;
-  border-bottom: 1px solid gray;
+
+
+@media (min-width: 1500px) {
+  .card img {
+    width: 225px !important;
+  }
+
+  .card {
+    width: 360px !important;
+    height: 252px !important;
+  }
+
 }
 
-.content-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 16px;
-  row-gap: 2rem;
-  padding-bottom: 1rem;
+
+@media (min-width: 1600px) {
+  .card img {
+    width: 225px !important;
+  }
+
+  .card {
+    width: 400px !important;
+    height: 240px !important;
+  }
+  
 }
 
-.card {
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 12rem;
-  background: linear-gradient(#1a1a68, #000033);
-  border-radius: 10px;
-  box-shadow: rgba(0, 0, 0, 0.69) 0px 26px 30px -10px,
-    rgba(0, 0, 0, 0.73) 0px 16px 10px -10px;
-  font-size: 2rem;
-  max-width: 350px;
-  max-height: 192px;
-}
 
-.card:hover {
-  background-image: var(--background-image);
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  border: 4px solid #fff;
-}
 
-.card img {
-  width: 15rem;
-}
+
+
+
 
 @media (max-width: 500px) {
   .card img {
-    width: 160px !important;
+    width: 90px !important;
+  }
+  .card{
+    margin: 5px !important;
   }
 }
 
-@media (max-width: 375px) {
+/* @media (max-width: 375px) {
   .card {
     width: 100% !important;
   }
-}
+} */
 
 .card-course {
   cursor: pointer;
@@ -233,7 +275,8 @@ export default {
   background-size: cover;
   background-position: center;
   border: 4px solid #fff;
-  background-color: rgba(0, 0, 0, 0.5); /* Fondo negro opaco */
+  background-color: rgba(0, 0, 0, 0.5);
+  /* Fondo negro opaco */
 }
 
 .additional-info {
