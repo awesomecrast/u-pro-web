@@ -1,19 +1,11 @@
 <template>
   <NavBar :banner="banner" :menu="menu" :showOnlyNav="true" />
-  <div class="content">
+  <div class="content" :style="{ 'background-image': `url(${player_cap.miniatura})`, 'backdrop-filter': 'blur(10px)', 'background-position': 'center', 'background-size': 'cover' }">
     <div class="content-max">
       <div class="content-video">
         <div>
-          <video
-            id="vid1"
-            ref="videoPlayer"
-            class="video-js vjs-default-skin video-custom"
-            width="840"
-            height="464"
-            controls
-            preload="auto"
-            data-setup=""
-          ></video>
+          <video id="vid1" ref="videoPlayer" class="video-js vjs-default-skin video-custom" width="840" height="464"
+            controls preload="auto" data-setup=""></video>
         </div>
         <div class="video-data">
           <div class="video-data-top">
@@ -25,28 +17,17 @@
           </div>
           <div class="video-data-bottom">
             <div class="video-stars">
-              <component
-                v-for="(star, index) in stars"
-                :key="index"
-                :is="star ? 'StarIcon' : 'StartIconOutline'"
-                @click="rateVideo(index + 1)"
-                class="icon-start-outline"
-              />
+              <component v-for="(star, index) in stars" :key="index" :is="star ? 'StarIcon' : 'StartIconOutline'"
+                @click="rateVideo(index + 1)" class="icon-start-outline" />
             </div>
             <div class="video-button">
-              <button
-                @click="likePlayer"
-                :style="isLike == true && 'background: linear-gradient(180deg, #32a3fb, #1455ec);'"
-              >
+              <button @click="likePlayer"
+                :style="isLike == true && 'background: linear-gradient(180deg, #32a3fb, #1455ec);'">
                 <HandThumbUpIcon class="icon" :style="isLike == true && 'color: #fff'" />
               </button>
               <button @click="showModal = true">
                 <!-- <ShareIcon class="icon" /> -->
-                <img
-                  style="width: 1.5rem"
-                  :src="require('../../public/share-icon.svg')"
-                  alt="descripción de la imagen"
-                />
+                <img style="width: 1.5rem" :src="require('../../public/share-icon.svg')" alt="descripción de la imagen" />
               </button>
             </div>
           </div>
@@ -58,7 +39,7 @@
             <h2>Comentarios</h2>
           </div>
           <div class="coment">
-            
+
             <div class="coment-user">
               <div class="coment-user-info">
                 <UserIcon class="icon-user" />
@@ -124,46 +105,46 @@
       </div>
       <div class="coment">
         <div class="create-coment" v-if="!showCreateComment">
-          <textarea
-            @keydown.enter.prevent
-            @input="adjustTextAreaHeight"
-            ref="myTextArea"
-            v-model="textContent"
-            rows="1"
-            placeholder="Escribe un comentario"
-          ></textarea>
+          <textarea @keydown.enter.prevent @input="adjustTextAreaHeight" ref="myTextArea" v-model="textContent" rows="1"
+            placeholder="Escribe un comentario"></textarea>
           <button class="create-coment-button">Comentar</button>
         </div>
-        <div class="coment-user">
+        <div class="coment-user" v-for="comment in player_comentarios" v-bind:key="comment.id">
           <div class="coment-user-info">
             <UserIcon class="icon-user" />
-            <p>@6v0k4d</p>
+            <p>@{{ comment.username }}</p>
           </div>
           <div class="coment-user-text">
             <p>
-              This is a really interesting topic and there’s so much to learn about it. I’m glad we have the opportunity
-              to discuss it and share our thoughts and ideas.
+              {{ comment.text }}
             </p>
             <div class="coment-user-text-button">
               <button @click="showResponseComment = !showResponseComment">Responder</button>
-              <button>0 Likes</button>
+              <button>{{ comment.likes }} Likes</button>
             </div>
             <div v-if="!showResponseComment" style="display: flex; gap: 1rem">
               <input v-model="textContentResponse" type="text" placeholder="Responder comentario" />
               <button @click="createResponseCommentPlayerCus" class="create-coment-button">Responder</button>
             </div>
           </div>
+
+          <div class="coment-response" v-for="response in comment.respuestas" v-bind:key="response">
+            <div class="coment-user-info">
+              <UserIcon class="icon-user" />
+              <p>@{{ response.username }}</p>
+            </div>
+            <div class="coment-user-text">
+              <p>{{ response.text }}</p>
+            </div>
+          </div>
+
+
+
         </div>
 
-        <div class="coment-response">
-          <div class="coment-user-info">
-            <UserIcon class="icon-user" />
-            <p>@6v0k4d</p>
-          </div>
-          <div class="coment-user-text">
-            <p>Great insights! Thanks for sharing</p>
-          </div>
-        </div>
+
+
+
       </div>
     </div>
 
@@ -172,14 +153,8 @@
         <h2>Cursos relacionados</h2>
       </div>
       <div class="courses-list">
-        <div class="courses-item">
-          <img src="https://academia.urbisfx.com/media/1.png" alt="course" />
-        </div>
-        <div class="courses-item">
-          <img src="https://academia.urbisfx.com/media/1.png" alt="course" />
-        </div>
-        <div class="courses-item">
-          <img src="https://academia.urbisfx.com/media/1.png" alt="course" />
+        <div class="courses-item" v-for="rel in player_relacionados" v-bind:key="rel.id">
+          <img :src="rel.miniatura" alt="course" />
         </div>
       </div>
     </div>
@@ -228,7 +203,7 @@ import { HandThumbUpIcon, ShareIcon, ChevronRightIcon, StarIcon } from '@heroico
 import { StarIcon as StartIconOutline, UserIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import FooterH from '@/components/FooterH.vue';
 
-const { handleGetAllCourses, handleGetPlayer, createCommentInPlayer, createCommentResponseInPlayer } = useCourses()
+const { handleGetPlayer, createCommentInPlayer, createCommentResponseInPlayer } = useCourses()
 // sendLikeComment
 
 
@@ -262,10 +237,11 @@ export default {
   },
   async mounted() {
     this.player_id = this.$route.params.id;
+
     this.currentUrl = window.location.href;
     this.player = videojs(this.$refs.videoPlayer, this.options);
     this.username = document.querySelector('meta[name=username]')
-    this.isLike  = JSON.parse(localStorage.getItem(`like-cap-${this.player_id}`))
+    this.isLike = JSON.parse(localStorage.getItem(`like-cap-${this.player_id}`))
     this.currentRating = JSON.parse(localStorage.getItem(`cap-${this.player_id}`))
     this.stars = this.stars.map((star, index) => index < this.currentRating);
 
@@ -280,11 +256,8 @@ export default {
       this.player_cap = dataPlayer.cap
       this.player_comentarios = dataPlayer.comentarios
       this.player_relacionados = dataPlayer.relacionados
-      console.log(dataPlayer)
-      const data = await handleGetAllCourses()
-      this.cursos = data.cursos
-      this.banner = data.banner
-      this.menu = data.menu
+
+
 
 
     } catch (error) {
@@ -299,7 +272,7 @@ export default {
       player: null,
       stars: [false, false, false, false, false],
       currentRating: 0,
-      isLike : false,
+      isLike: false,
       showModal: false,
       currentUrl: "",
       isCopied: false,
@@ -353,8 +326,8 @@ export default {
       }
     },
     likePlayer() {
-      this.isLike  = !this.isLike
-      localStorage.setItem(`like-cap-${this.player_id}`, this.isLike )
+      this.isLike = !this.isLike
+      localStorage.setItem(`like-cap-${this.player_id}`, this.isLike)
     },
     adjustTextAreaHeight() {
       this.$refs.myTextArea.style.height = 'auto';
@@ -420,7 +393,7 @@ export default {
 }
 
 .video-data-next:hover,
-.video-data-next:hover > svg {
+.video-data-next:hover>svg {
   color: #de9c39 !important;
 }
 
