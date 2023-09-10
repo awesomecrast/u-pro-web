@@ -1,15 +1,30 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHistory } from 'vue-router';
 
 const routes = [
   {
-    path: "/u-pro",
-    name: "home",
-    component: () => import("./pages/HomePage.vue"),
+    path: '/u-pro',
+    name: 'home',
+    component: () => import('./pages/HomePage.vue'),
   },
   {
-    path: "/u-pro/cert/:id",
-    name: "certification",
-    component: () => import("./pages/ListCoursesPage.vue"),
+    path: '/u-pro/cert/:id',
+    name: 'certification',
+    component: () => import('./pages/ListCoursesPage.vue'),
+  },
+  {
+    path: '/u/:username',
+    name: 'profile',
+    component: () => import('./pages/ProfileUserPage.vue'),
+  },
+  {
+    path: '/play/:id',
+    name: 'play-video',
+    component: () => import('./pages/VideoPlayPage.vue'),
+  },
+  {
+    path: '/live/:id',
+    name: 'live-video',
+    component: () => import('./pages/VideoPlayPage.vue'),
   },
   //   {
   //     path: "/dashboard/panel",

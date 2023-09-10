@@ -3,10 +3,7 @@
   <nav class="nav nav-desktop">
     <div class="nav-section-1">
       <router-link :to="{ name: 'home' }">
-        <img
-          src="https://academia.urbisfx.com/media/Sin_t%C3%ADtulo_1080100px.png"
-          alt=""
-        />
+        <img src="https://academia.urbisfx.com/media/Sin_t%C3%ADtulo_1080100px.png" alt="" />
       </router-link>
 
       <ul class="nav-links" v-for="(item, index) in menu" :key="index">
@@ -21,45 +18,23 @@
     </div>
     <div class="nav-section-2">
       <div class="nav-section-2-flag">
-        <div
-          ref="flagDiv"
-          class="flag-div"
-          @click.prevent="showMoreFlag = !showMoreFlag"
-        >
-          <img
-            class="flag"
-            src="https://academia.urbisfx.com/static/flag-icons/flags/4x3/us.svg"
-            alt="USA"
-          />
+        <div ref="flagDiv" class="flag-div" @click.prevent="showMoreFlag = !showMoreFlag">
+          <img class="flag" src="https://academia.urbisfx.com/static/flag-icons/flags/4x3/us.svg" alt="USA" />
           EN
         </div>
-        <div
-          v-if="showMoreFlag"
-          :class="showMoreFlag ? 'more-flag' : 'more-flag-hidden'"
-        >
+        <div v-if="showMoreFlag" :class="showMoreFlag ? 'more-flag' : 'more-flag-hidden'">
           <div class="flag-div" @click.prevent="showMoreFlag = !showMoreFlag">
-            <img
-              class="flag"
-              src="https://academia.urbisfx.com/static/flag-icons/flags/4x3/us.svg"
-              alt="USA"
-            />
+            <img class="flag" src="https://academia.urbisfx.com/static/flag-icons/flags/4x3/us.svg" alt="USA" />
             EN
           </div>
           <div class="flag-div" @click.prevent="showMoreFlag = !showMoreFlag">
-            <img
-              class="flag"
-              src="https://academia.urbisfx.com/static/flag-icons/flags/4x3/es.svg"
-              alt="USA"
-            />
+            <img class="flag" src="https://academia.urbisfx.com/static/flag-icons/flags/4x3/es.svg" alt="USA" />
             ES
           </div>
         </div>
       </div>
       <router-link :to="{ name: 'home' }" class="nav-user">
-        <img
-          src="https://academia.urbisfx.com/static/assets/img/user.svg"
-          alt=""
-        />
+        <img src="https://academia.urbisfx.com/static/assets/img/user.svg" alt="" />
       </router-link>
     </div>
   </nav>
@@ -68,17 +43,11 @@
   <nav class="nav nav-mobile">
     <div class="nav-section-1">
       <router-link :to="{ name: 'home' }">
-        <img
-          src="https://academia.urbisfx.com/media/Sin_t%C3%ADtulo_1080100px.png"
-          alt=""
-        />
+        <img src="https://academia.urbisfx.com/media/Sin_t%C3%ADtulo_1080100px.png" alt="" />
       </router-link>
     </div>
 
-    <button
-      @click.prevent="showMenuMobile = !showMenuMobile"
-      class="button-bar"
-    >
+    <button @click.prevent="showMenuMobile = !showMenuMobile" class="button-bar">
       <Bars3Icon class="icon" />
     </button>
 
@@ -98,35 +67,15 @@
         </li>
         <li class="link">
           <div class="link-icons">
-            <a href="/"
-              ><img
-                src="https://academia.urbisfx.com/media/1_LOCYrwp.svg"
-                alt="facebook"
-            /></a>
-            <a href="/"
-              ><img
-                src="https://academia.urbisfx.com/media/2_8iCiU1B.svg"
-                alt="facebook"
-            /></a>
-            <a href="/"
-              ><img
-                src="https://academia.urbisfx.com/media/3_A4ciE69.svg"
-                alt="facebook"
-            /></a>
+            <a href="/"><img src="https://academia.urbisfx.com/media/1_LOCYrwp.svg" alt="facebook" /></a>
+            <a href="/"><img src="https://academia.urbisfx.com/media/2_8iCiU1B.svg" alt="facebook" /></a>
+            <a href="/"><img src="https://academia.urbisfx.com/media/3_A4ciE69.svg" alt="facebook" /></a>
           </div>
         </li>
       </ul>
       <div class="nav-section-2-flag">
-        <div
-          ref="flagDiv"
-          class="flag-div"
-          @click.prevent="showMoreFlag = !showMoreFlag"
-        >
-          <img
-            class="flag"
-            src="https://academia.urbisfx.com/static/flag-icons/flags/4x3/us.svg"
-            alt="USA"
-          />
+        <div ref="flagDiv" class="flag-div" @click.prevent="showMoreFlag = !showMoreFlag">
+          <img class="flag" src="https://academia.urbisfx.com/static/flag-icons/flags/4x3/us.svg" alt="USA" />
           EN
         </div>
         <!-- <div
@@ -152,24 +101,14 @@
         </div> -->
       </div>
       <router-link :to="{ name: 'home' }" class="nav-user">
-        <img
-          src="https://academia.urbisfx.com/static/assets/img/user.svg"
-          alt=""
-        />
+        <img src="https://academia.urbisfx.com/static/assets/img/user.svg" alt="" />
       </router-link>
     </div>
   </nav>
 
-  <VueSpinner class="loader" v-if="loading" size="60" color="white" />
-  <video
-    class="video-header"
-    autoplay
-    loop
-    muted
-    :src="videoSrc"
-    @canplay="videoLoaded"
-  ></video>
-  <div class="banner-flot">
+  <VueSpinner class="loader" v-if="loading && !showOnlyNav" size="60" color="white" />
+  <video v-if="!showOnlyNav" class="video-header" autoplay loop muted :src="videoSrc" @canplay="videoLoaded"></video>
+  <div v-if="!showOnlyNav" class="banner-flot">
     <h3>{{ banner.titulo }}</h3>
     <h4>{{ banner.subtitulo }}</h4>
     <h5>{{ banner.texto }}</h5>
@@ -197,6 +136,10 @@ export default {
     },
     banner: {
       type: Object,
+    },
+    showOnlyNav: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

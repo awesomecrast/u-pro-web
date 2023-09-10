@@ -6,10 +6,15 @@
   <div class="content">
     <!-- Content certifications -->
     <div class="content-cards">
-      <div class="card" v-for="(certificado, index) in certificados" :key="certificado.id"
-        @click="redirectToCertification(index + 1)" :style="{
+      <div
+        class="card"
+        v-for="(certificado, index) in certificados"
+        :key="certificado.id"
+        @click="redirectToCertification(index + 1)"
+        :style="{
           '--background-image': `url(${certificado.gif})`,
-        }">
+        }"
+      >
         <img class="certification-img" :src="certificado.logo" :alt="certificado.nombre" />
       </div>
     </div>
@@ -20,8 +25,12 @@
         <h2>{{ cursocap.nombre }}</h2>
       </div>
       <SwiperCustom>
-        <swiper-slide class="card-course" v-for="capitulo in cursocap.capitulos" :key="capitulo.id"
-          @click="redirectToCourse(capitulo)">
+        <swiper-slide
+          class="card-course"
+          v-for="capitulo in cursocap.capitulos"
+          :key="capitulo.id"
+          @click="redirectToCourse(capitulo)"
+        >
           <img class="course-miniatura" :src="capitulo.miniatura" alt="img" />
           <div class="additional-info">
             <h2>{{ capitulo.nombre }}</h2>
@@ -106,8 +115,6 @@ export default {
   padding-top: 5rem;
 }
 
-
-
 .content-header {
   margin-block: 2rem;
   margin-inline: 2rem;
@@ -139,7 +146,7 @@ export default {
   height: 12rem;
   background: linear-gradient(#1a1a68, #000033);
   border-radius: 10px;
-  box-shadow: -2px 9px 16px 8px rgba(0,0,0,0.81);;
+  box-shadow: -2px 9px 16px 8px rgba(0, 0, 0, 0.81);
   font-size: 2rem;
   max-width: 350px;
   max-height: 192px;
@@ -159,8 +166,6 @@ export default {
 .card img {
   width: 15rem;
 }
-
-
 
 @media (max-width: 950px) {
   .content {
@@ -183,15 +188,12 @@ export default {
   .card {
     width: 100px;
     height: 70px !important;
-
   }
 
   .card img {
     width: 90px !important;
   }
 }
-
-
 
 @media (min-width: 1000px) {
   .card img {
@@ -204,8 +206,6 @@ export default {
   }
 }
 
-
-
 @media (min-width: 1500px) {
   .card img {
     width: 225px !important;
@@ -215,9 +215,7 @@ export default {
     width: 360px !important;
     height: 252px !important;
   }
-
 }
-
 
 @media (min-width: 1600px) {
   .card img {
@@ -228,20 +226,13 @@ export default {
     width: 400px !important;
     height: 240px !important;
   }
-  
 }
-
-
-
-
-
-
 
 @media (max-width: 500px) {
   .card img {
     width: 90px !important;
   }
-  .card{
+  .card {
     margin: 5px !important;
   }
 }

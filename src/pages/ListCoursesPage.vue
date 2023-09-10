@@ -2,12 +2,7 @@
   <NavBar :banner="banner" :menu="menu" />
   <div class="content">
     <div class="content-cards">
-      <div
-        class="card"
-        v-for="capitulo in cursos"
-        :key="capitulo.id"
-        @click="redirectToCourse(capitulo)"
-      >
+      <div class="card" v-for="capitulo in cursos" :key="capitulo.id" @click="redirectToCourse(capitulo)">
         <!-- <img
           :src="'https://academia.urbisfx.com' + capitulo.miniatura"
           alt="img"
