@@ -52,6 +52,7 @@
             <h2>Comentarios</h2>
           </div>
           <div class="coment">
+            
             <div class="coment-user">
               <div class="coment-user-info">
                 <UserIcon class="icon-user" />
@@ -78,6 +79,8 @@
                 <p>Great insights! Thanks for sharing</p>
               </div>
             </div>
+
+
           </div>
         </div>
       </div>
