@@ -7,13 +7,24 @@
         </div>
         <div class="profile-info">
           <h2>dream SUBMISSION blog</h2>
-          <h3>@one-time-i-dreamt / one-time-i-dreamt.tumblr.com</h3>
-          <span>💕💕💕💕💕</span>
+          <h3>@{{ username }}</h3>
+          <span>💎</span>
           <p>
             A pro player is a professional gamer who competes in organized video game tournaments and leagues for cash
             prizes 🎶
           </p>
         </div>
+      </div>
+
+      <div class="create-publication">
+        <textarea
+          @input="adjustTextAreaHeight"
+          ref="myTextArea"
+          v-model="textContent"
+          rows="1"
+          placeholder="Haz una publicación..."
+        ></textarea>
+        <PaperAirplaneIcon class="create-publication-button" />
       </div>
 
       <!-- Publication -->
@@ -22,7 +33,31 @@
           <div class="publication-user">
             <img src="https://th.bing.com/th/id/OIP.gAp5VXTOGXFMcfQZ_IjusgAAAA?pid=ImgDet&rs=1" alt="profile" />
             <div class="publication-user-name">
-              <h3>@one-time-i-dreamt 💕💕💕💕💕</h3>
+              <h3>@{{ username }} 💎</h3>
+              <!-- <button>Seguir</button> -->
+            </div>
+          </div>
+          <div class="publication-content">
+            <p>
+              “Good evening everyone! This is a dream come true for me. Ever since I was a kid, I’ve always wanted to be
+              here, in front of all of you, sharing the music I love. Tonight, we’re going to dive into the world of
+              Phonk, a genre that combines the best of hip-hop, funk, and soul. We’re going to journey together through
+              raw beats, smooth jazz samples, and deep bass lines. So get ready, because tonight, we’re going to raise
+              the energy and celebrate life through music. Let’s do this!” 😊
+            </p>
+            <button v-if="!isLike" class="publication-content-like" @click="isLike = true">
+              <HeartIconOutline class="icon" />
+            </button>
+            <button v-else class="publication-content-like" @click="isLike = false">
+              <HeartIcon class="icon-like" />
+            </button>
+          </div>
+        </div>
+        <div class="publication">
+          <div class="publication-user">
+            <img src="https://th.bing.com/th/id/OIP.gAp5VXTOGXFMcfQZ_IjusgAAAA?pid=ImgDet&rs=1" alt="profile" />
+            <div class="publication-user-name">
+              <h3>@{{ username }} 💎</h3>
               <!-- <button>Seguir</button> -->
             </div>
           </div>
@@ -48,23 +83,35 @@
 </template>
 
 <script lang="js">
-import { HeartIcon } from '@heroicons/vue/24/solid';
-import { HeartIcon as HeartIconOutline} from '@heroicons/vue/24/outline';
+import { HeartIcon, PaperAirplaneIcon } from '@heroicons/vue/24/solid';
+import { HeartIcon as HeartIconOutline } from '@heroicons/vue/24/outline';
 
 export default {
-    created() {
-        const username = this.$route.params.username;
-        console.log(username);
+  mounted() {
+
+  },
+  created() {
+    const username = this.$route.params.username;
+    this.username = username
+  },
+  components: {
+    HeartIcon,
+    HeartIconOutline,
+    PaperAirplaneIcon
+  },
+  data() {
+    return {
+      isLike: false,
+      username: "",
+      textContent: ""
+    }
+  },
+  methods: {
+    adjustTextAreaHeight() {
+      this.$refs.myTextArea.style.height = 'auto';
+      this.$refs.myTextArea.style.height = this.$refs.myTextArea.scrollHeight + 'px';
     },
-    components: {
-        HeartIcon,
-        HeartIconOutline
-    },
-    data() {
-        return {
-            isLike: false
-        }
-    },
+  }
 }
 </script>
 
@@ -135,6 +182,48 @@ export default {
   text-align: center;
 }
 
+/* Create publication */
+.create-publication {
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  column-gap: 1rem;
+  margin-top: 3rem;
+}
+
+.input-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+textarea {
+  border: none;
+  outline: none;
+  flex-grow: 1;
+  font-size: 16px;
+  resize: none;
+  font-family: 'Netflix Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.create-publication-button {
+  cursor: pointer;
+  color: #007bff;
+  width: 1.5rem;
+}
+
+.create-publication-button:hover {
+  color: #0056b3;
+}
+
 /* Publication */
 .publications {
   display: flex;
@@ -149,6 +238,7 @@ export default {
   display: flex;
   flex-direction: column;
   row-gap: 0.5rem;
+  border-bottom: 1px solid #d4d4d4;
 }
 
 .publication-user {
