@@ -24,7 +24,7 @@ const routes = [
   {
     path: '/live/:id',
     name: 'live-video',
-    component: () => import('./pages/VideoPlayPage.vue'),
+    component: () => import('./pages/VideoLivePage.vue'),
   },
   //   {
   //     path: "/dashboard/panel",

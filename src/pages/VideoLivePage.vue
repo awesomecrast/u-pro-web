@@ -3,20 +3,21 @@
   <div class="content">
     <div class="content-max">
       <div class="content-video">
-        <div>
-          <video
-            id="vid1"
-            ref="videoPlayer"
-            class="video-js vjs-default-skin video-custom"
-            width="840"
-            height="464"
-            controls
-            preload="auto"
-            data-setup=""
-          >
-            <!-- <source src="https://www.youtube.com/embed/<VIDEO_ID>" type="video/youtube" /> -->
-          </video>
-        </div>
+        <!-- <video
+          id="vid1"
+          ref="videoPlayer"
+          class="video-js vjs-default-skin video-custom"
+          width="840"
+          height="464"
+          controls
+          preload="auto"
+          data-setup=""
+        ></video> -->
+
+        <video-js ref="videoPlayer" class="vjs-default-skin" controls width="640" height="268">
+          <source :src="videoUrl" type="application/x-mpegURL" />
+        </video-js>
+
         <div class="video-data">
           <div class="video-data-top">
             <h2>Es Normal que Muchos se Rindan</h2>
@@ -191,9 +192,9 @@
 </template>
 
 <script lang="js">
-import 'video.js/dist/video-js.css';
-import videojs from 'video.js';
-import 'videojs-youtube';
+import 'video.js/dist/video-js.css'
+import videojs from 'video.js'
+import '@videojs/http-streaming'
 import NavBar from '@/components/NavBar.vue';
 import useCourses from "@/composables/useCourses"
 import { HandThumbUpIcon, ShareIcon, ChevronRightIcon, StarIcon } from '@heroicons/vue/24/solid';
@@ -215,23 +216,24 @@ export default {
     FooterH
 },
   props: {
-    options: {
-      type: Object,
-      default () {
-        return {
-          techOrder: ['youtube'],
-          sources: [{
-            type: 'video/youtube',
-            src: 'https://www.youtube.com/embed/cAn1dHmpBQA?autoplay=0&controls=0&disablekb=1&playsinline=1&cc_load_policy=0&cc_lang_pref=auto&widget_referrer=https%3A%2F%2Facademia.urbisfx.com%2Fplayer%2F6%2F&rel=0&showinfo=0&iv_load_policy=3&modestbranding=1&customControls=true&noCookie=false&enablejsapi=1&origin=https%3A%2F%2Facademia.urbisfx.com&widgetid=1',
-          }],
-          youtube: { "customVars": { "wmode": "transparent" },  "ytControls": 0, "iv_load_policy": 1 }
-        };
-      }
-    }
+    // options: {
+    //   type: Object,
+    //   default () {
+    //     return {
+    //       techOrder: ['youtube'],
+    //       sources: [{
+    //         type: 'video/youtube',
+    //         src: 'https://www.youtube.com/embed/cAn1dHmpBQA?autoplay=0&controls=0&disablekb=1&playsinline=1&cc_load_policy=0&cc_lang_pref=auto&widget_referrer=https%3A%2F%2Facademia.urbisfx.com%2Fplayer%2F6%2F&rel=0&showinfo=0&iv_load_policy=3&modestbranding=1&customControls=true&noCookie=false&enablejsapi=1&origin=https%3A%2F%2Facademia.urbisfx.com&widgetid=1',
+    //       }],
+    //       youtube: { "customVars": { "wmode": "transparent" },  "ytControls": 0, "iv_load_policy": 1 }
+    //     };
+    //   }
+    // }
   },
   async mounted() {
     this.currentUrl = window.location.href;
     this.player = videojs(this.$refs.videoPlayer, this.options);
+    this.player = videojs(this.$refs.videoPlayer);
     try {
       const { handleGetAllCourses } = useCourses();
       const data = await handleGetAllCourses()
@@ -254,6 +256,7 @@ export default {
       showModal: false,
       currentUrl: "",
       isCopied: false,
+      videoUrl: 'https://example.com/index.m3u8'
     }
   },
   beforeUnmount () {
@@ -280,7 +283,6 @@ export default {
 </script>
 
 <style scoped>
-@import url('https://unpkg.com/@videojs/themes@1/dist/city/index.css');
 .content {
   padding-inline: 0.75rem;
   width: 100%;
@@ -465,19 +467,10 @@ export default {
   row-gap: 2rem;
 }
 
-.video-custom {
-  width: 750px;
-}
-
 @media (max-width: 870px) {
   .video-custom {
     max-width: 640px;
-    width: 500px;
-    height: 350px;
-  }
-
-  .content-video {
-    max-width: 100%;
+    width: 100%;
   }
 }
 
