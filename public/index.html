@@ -14,7 +14,9 @@
       referrerpolicy="no-referrer"
     />
 
-    <meta name="data" content="{% if request.cuentaImportada %}{{request.cuentaImportada.username}}{% endif %}">
+    <meta name="username" content="{% if request.cuentaImportada %}{{request.cuentaImportada.username}}{% endif %}">
+    <meta name="avatar" content="{% if request.cuentaImportada and request.cuentaImportada.avatar  %}{{request.cuentaImportada.avatar.url}}{% endif %}">
+    
     <head>
       <link rel="icon" href="https://academia.urbisfx.com/media/Dise%C3%B1o_sin_t%C3%ADtulo_12.png" />
     </head>
