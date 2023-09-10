@@ -1,160 +1,185 @@
 <template>
-  <NavBar :banner="banner" :menu="menu" :showOnlyNav="true" />
-  <div class="content" :style="{ 'background-image': `url(${player_cap.miniatura})`, 'backdrop-filter': 'blur(10px)', 'background-position': 'center', 'background-size': 'cover' }">
-    <div class="content-max">
-      <div class="content-video">
-        <div>
-          <video id="vid1" ref="videoPlayer" class="video-js vjs-default-skin video-custom" width="840" height="464"
-            controls preload="auto" data-setup=""></video>
-        </div>
-        <div class="video-data">
-          <div class="video-data-top">
-            <h2>Es Normal que Muchos se Rindan</h2>
-            <div class="video-data-next">
-              <h3>Siguiente</h3>
-              <ChevronRightIcon class="icon-next" />
-            </div>
+  <div style="background-color: #0b0d1b !important; width: 100%; height: 5rem; overflow: hidden">
+    <NavBar :banner="banner" :menu="menu" :showOnlyNav="true" />
+  </div>
+  <div
+    class=""
+    :style="{
+      'background-image': `url('https://academia.urbisfx.com/${player_cap.miniatura}')`,
+      'background-position': 'center',
+      'background-size': 'cover',
+    }"
+  >
+    <div class="content" style="backdrop-filter: blur(25px); background-color: rgba(0, 0, 0, 0.65)">
+      <div class="content-max">
+        <div class="content-video">
+          <div>
+            <!-- width="640"
+              height="264" -->
+            <video
+              id="vid1"
+              ref="videoPlayer"
+              class="video-js vjs-default-skin video-custom"
+              width="840"
+              height="464"
+              controls
+              preload="auto"
+              data-setup=""
+            ></video>
           </div>
-          <div class="video-data-bottom">
-            <div class="video-stars">
-              <component v-for="(star, index) in stars" :key="index" :is="star ? 'StarIcon' : 'StartIconOutline'"
-                @click="rateVideo(index + 1)" class="icon-start-outline" />
-            </div>
-            <div class="video-button">
-              <button @click="likePlayer"
-                :style="isLike == true && 'background: linear-gradient(180deg, #32a3fb, #1455ec);'">
-                <HandThumbUpIcon class="icon" :style="isLike == true && 'color: #fff'" />
-              </button>
-              <button @click="showModal = true">
-                <!-- <ShareIcon class="icon" /> -->
-                <img style="width: 1.5rem" :src="require('../../public/share-icon.svg')" alt="descripción de la imagen" />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Video max comentarios -->
-        <div class="coments-max">
-          <div class="coments-title">
-            <h2>Comentarios</h2>
-          </div>
-          <div class="coment">
-
-            <div class="coment-user">
-              <div class="coment-user-info">
-                <UserIcon class="icon-user" />
-                <p>@6v0k4d</p>
+          <div class="video-data">
+            <div class="video-data-top">
+              <h2>Es Normal que Muchos se Rindan</h2>
+              <div class="video-data-next">
+                <h3>Siguiente</h3>
+                <ChevronRightIcon class="icon-next" />
               </div>
-              <div class="coment-user-text">
-                <p>
-                  This is a really interesting topic and there’s so much to learn about it. I’m glad we have the
-                  opportunity to discuss it and share our thoughts and ideas.
-                </p>
-                <div class="coment-user-text-button">
-                  <button @click="showResponseComment = !showResponseComment">Responder</button>
-                  <button>0 Likes</button>
+            </div>
+            <div class="video-data-bottom">
+              <div class="video-stars">
+                <component
+                  v-for="(star, index) in stars"
+                  :key="index"
+                  :is="star ? 'StarIcon' : 'StartIconOutline'"
+                  @click="rateVideo(index + 1)"
+                  class="icon-start-outline"
+                />
+              </div>
+              <div class="video-button">
+                <button
+                  @click="likePlayer"
+                  :style="isLike == true && 'background: linear-gradient(180deg, #32a3fb, #1455ec);'"
+                >
+                  <HandThumbUpIcon class="icon" :style="isLike == true && 'color: #fff'" />
+                </button>
+                <button @click="showModal = true">
+                  <!-- <ShareIcon class="icon" /> -->
+                  <img
+                    style="width: 1.5rem"
+                    :src="require('../../public/share-icon.svg')"
+                    alt="descripción de la imagen"
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Video max comentarios -->
+          <div class="coments-max">
+            <div class="coments-title">
+              <h2>Comentarios</h2>
+            </div>
+            <div class="coment">
+              <div class="coment-user" v-for="comment in player_comentarios" v-bind:key="comment.id">
+                <div class="coment-user-info">
+                  <!-- <UserIcon class="icon-user" /> -->
+                  <img
+                    style="width: 2.5rem"
+                    :src="'https://academia.urbisfx.com/' + comment.user_avatar"
+                    alt="avatar"
+                  />
+                  <p>@{{ comment.username }}</p>
+                </div>
+                <div class="coment-user-text">
+                  <p>
+                    {{ comment.text }}
+                  </p>
+                  <div class="coment-user-text-button">
+                    <button @click="showResponseComment = !showResponseComment">Responder</button>
+                    <button @click="onLikeComment(comment.id)">{{ comment.likes }} Likes</button>
+                  </div>
+                  <div v-if="!showResponseComment" style="display: flex; gap: 1rem">
+                    <input v-model="textContentResponse" type="text" placeholder="Responder comentario" />
+                    <button @click="createResponseCommentPlayerCus" class="create-coment-button">Responder</button>
+                  </div>
+                </div>
+
+                <div class="coment-response" v-for="response in comment.respuestas" v-bind:key="response">
+                  <div class="coment-user-info">
+                    <!-- <UserIcon class="icon-user" /> -->
+                    <img
+                      style="width: 2.5rem"
+                      :src="'https://academia.urbisfx.com/' + response.user_avatar"
+                      alt="avatar"
+                    />
+                    <p>@{{ response.username }}</p>
+                  </div>
+                  <div class="coment-user-text">
+                    <p>{{ response.text }}</p>
+                  </div>
                 </div>
               </div>
-              <div v-if="showResponseComment" style="display: flex; gap: 1rem">
+            </div>
+          </div>
+        </div>
+        <div class="courses-max">
+          <div class="courses-title">
+            <h2>Cursos relacionados</h2>
+          </div>
+          <div class="courses-item" v-for="rel in player_relacionados" v-bind:key="rel.id">
+            <img :src="rel.miniatura" alt="course" />
+          </div>
+        </div>
+      </div>
+
+      <div class="coments">
+        <div class="coments-title">
+          <h2>Comentarios</h2>
+        </div>
+        <div class="coment">
+          <div class="create-coment" v-if="!showCreateComment">
+            <textarea
+              @keydown.enter.prevent
+              @input="adjustTextAreaHeight"
+              ref="myTextArea"
+              v-model="textContent"
+              rows="1"
+              placeholder="Escribe un comentario"
+            ></textarea>
+            <button class="create-coment-button">Comentar</button>
+          </div>
+          <div class="coment-user" v-for="comment in player_comentarios" v-bind:key="comment.id">
+            <div class="coment-user-info">
+              <!-- <UserIcon class="icon-user" /> -->
+              <img style="width: 2.5rem" :src="'https://academia.urbisfx.com/' + comment.user_avatar" alt="avatar" />
+              <p>@{{ comment.username }}</p>
+            </div>
+            <div class="coment-user-text">
+              <p>
+                {{ comment.text }}
+              </p>
+              <div class="coment-user-text-button">
+                <button @click="showResponseComment = !showResponseComment">Responder</button>
+                <button>{{ comment.likes }} Likes</button>
+              </div>
+              <div v-if="!showResponseComment" style="display: flex; gap: 1rem">
                 <input v-model="textContentResponse" type="text" placeholder="Responder comentario" />
                 <button @click="createResponseCommentPlayerCus" class="create-coment-button">Responder</button>
               </div>
             </div>
 
-            <div class="coment-response">
+            <div class="coment-response" v-for="response in comment.respuestas" v-bind:key="response">
               <div class="coment-user-info">
-                <UserIcon class="icon-user" />
-                <p>@6v0k4d</p>
+                <!-- <UserIcon class="icon-user" /> -->
+                <img style="width: 2.5rem" :src="'https://academia.urbisfx.com/' + response.user_avatar" alt="avatar" />
+                <p>@{{ response.username }}</p>
               </div>
               <div class="coment-user-text">
-                <p>Great insights! Thanks for sharing</p>
+                <p>{{ response.text }}</p>
               </div>
             </div>
-
-
           </div>
         </div>
       </div>
-      <div class="courses-max">
+
+      <div class="courses">
         <div class="courses-title">
           <h2>Cursos relacionados</h2>
         </div>
         <div class="courses-list">
-          <div class="courses-item">
-            <img src="https://academia.urbisfx.com/media/1.png" alt="course" />
+          <div class="courses-item" v-for="rel in player_relacionados" v-bind:key="rel.id">
+            <img :src="rel.miniatura" alt="course" />
           </div>
-          <div class="courses-item">
-            <img src="https://academia.urbisfx.com/media/1.png" alt="course" />
-          </div>
-          <div class="courses-item">
-            <img src="https://academia.urbisfx.com/media/1.png" alt="course" />
-          </div>
-          <div class="courses-item">
-            <img src="https://academia.urbisfx.com/media/1.png" alt="course" />
-          </div>
-          <div class="courses-item">
-            <img src="https://academia.urbisfx.com/media/1.png" alt="course" />
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="coments">
-      <div class="coments-title">
-        <h2>Comentarios</h2>
-      </div>
-      <div class="coment">
-        <div class="create-coment" v-if="!showCreateComment">
-          <textarea @keydown.enter.prevent @input="adjustTextAreaHeight" ref="myTextArea" v-model="textContent" rows="1"
-            placeholder="Escribe un comentario"></textarea>
-          <button class="create-coment-button">Comentar</button>
-        </div>
-        <div class="coment-user" v-for="comment in player_comentarios" v-bind:key="comment.id">
-          <div class="coment-user-info">
-            <UserIcon class="icon-user" />
-            <p>@{{ comment.username }}</p>
-          </div>
-          <div class="coment-user-text">
-            <p>
-              {{ comment.text }}
-            </p>
-            <div class="coment-user-text-button">
-              <button @click="showResponseComment = !showResponseComment">Responder</button>
-              <button>{{ comment.likes }} Likes</button>
-            </div>
-            <div v-if="!showResponseComment" style="display: flex; gap: 1rem">
-              <input v-model="textContentResponse" type="text" placeholder="Responder comentario" />
-              <button @click="createResponseCommentPlayerCus" class="create-coment-button">Responder</button>
-            </div>
-          </div>
-
-          <div class="coment-response" v-for="response in comment.respuestas" v-bind:key="response">
-            <div class="coment-user-info">
-              <UserIcon class="icon-user" />
-              <p>@{{ response.username }}</p>
-            </div>
-            <div class="coment-user-text">
-              <p>{{ response.text }}</p>
-            </div>
-          </div>
-
-
-
-        </div>
-
-
-
-
-      </div>
-    </div>
-
-    <div class="courses">
-      <div class="courses-title">
-        <h2>Cursos relacionados</h2>
-      </div>
-      <div class="courses-list">
-        <div class="courses-item" v-for="rel in player_relacionados" v-bind:key="rel.id">
-          <img :src="rel.miniatura" alt="course" />
         </div>
       </div>
     </div>
@@ -194,17 +219,16 @@
 </template>
 
 <script lang="js">
-import 'video.js/dist/video-js.css';
-import videojs from 'video.js';
-import 'videojs-youtube';
+import videojs from 'video.js'
+import 'video.js/dist/video-js.css'
+import 'videojs-youtube'
 import NavBar from '@/components/NavBar.vue';
 import useCourses from "@/composables/useCourses"
 import { HandThumbUpIcon, ShareIcon, ChevronRightIcon, StarIcon } from '@heroicons/vue/24/solid';
 import { StarIcon as StartIconOutline, UserIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import FooterH from '@/components/FooterH.vue';
 
-const { handleGetPlayer, createCommentInPlayer, createCommentResponseInPlayer } = useCourses()
-// sendLikeComment
+const { handleGetPlayer, createCommentInPlayer, createCommentResponseInPlayer, sendLikeComment, handleGetAllCourses } = useCourses()
 
 
 export default {
@@ -218,29 +242,26 @@ export default {
     StartIconOutline,
     UserIcon,
     XMarkIcon,
-    FooterH
+    FooterH,
+    videojs
   },
-  props: {
-    options: {
-      type: Object,
-      default() {
-        return {
-          techOrder: ['youtube'],
-          sources: [{
-            type: 'video/youtube',
-            src: 'https://www.youtube.com/embed/cAn1dHmpBQA?autoplay=0&controls=0&disablekb=1&playsinline=1&cc_load_policy=0&cc_lang_pref=auto&widget_referrer=https%3A%2F%2Facademia.urbisfx.com%2Fplayer%2F6%2F&rel=0&showinfo=0&iv_load_policy=3&modestbranding=1&customControls=true&noCookie=false&enablejsapi=1&origin=https%3A%2F%2Facademia.urbisfx.com&widgetid=1',
-          }],
-          youtube: { "customVars": { "wmode": "transparent" }, "ytControls": 0, "iv_load_policy": 1 }
-        };
+  computed: {
+    videoOptions() {
+      return {
+        techOrder: ['youtube'],
+        autoplay: false,
+        sources: [{
+          type: 'video/youtube',
+          src: this.player_cap.youtube_link
+        }]
       }
     }
   },
   async mounted() {
     this.player_id = this.$route.params.id;
-
     this.currentUrl = window.location.href;
-    this.player = videojs(this.$refs.videoPlayer, this.options);
     this.username = document.querySelector('meta[name=username]')
+    this.avatar = document.querySelector('meta[name=avatar]')
     this.isLike = JSON.parse(localStorage.getItem(`like-cap-${this.player_id}`))
     this.currentRating = JSON.parse(localStorage.getItem(`cap-${this.player_id}`))
     this.stars = this.stars.map((star, index) => index < this.currentRating);
@@ -256,10 +277,12 @@ export default {
       this.player_cap = dataPlayer.cap
       this.player_comentarios = dataPlayer.comentarios
       this.player_relacionados = dataPlayer.relacionados
+      this.player = videojs(this.$refs.videoPlayer, this.videoOptions)
 
-
-
-
+      const data = await handleGetAllCourses()
+      this.cursos = data.cursos
+      this.banner = data.banner
+      this.menu = data.menu
     } catch (error) {
       console.error('Error al obtener los cursos:', error);
     }
@@ -279,18 +302,28 @@ export default {
       textContent: "",
       textContentResponse: '',
       username: null,
+      avatar: "",
 
       showCreateComment: false,
       showResponseComment: false,
       player_id: "",
       player_cap: {},
       player_comentarios: [],
-      player_relacionados: {}
+      player_relacionados: {},
+
     }
   },
   beforeUnmount() {
     if (this.player) {
       this.player.dispose();
+    }
+  },
+  watch: {
+    'player_cap.youtube_link': function (newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.player.src({ type: 'video/youtube', src: newVal });
+        this.player.load();
+      }
     }
   },
   methods: {
@@ -334,21 +367,45 @@ export default {
       this.$refs.myTextArea.style.height = this.$refs.myTextArea.scrollHeight + 'px';
     },
 
-    createCommentPlayerCus() {
+    async createCommentPlayerCus() {
       if (this.textContent === "" && this.textContent.trim() === "") {
         return
       }
-      createCommentInPlayer(this.player_id, this.textContent)
+      const response = await createCommentInPlayer(this.player_id, this.textContent)
       this.textContent = ""
+      console.log(response)
     },
 
-    createResponseCommentPlayerCus() {
+    async createResponseCommentPlayerCus() {
       if (this.textContentResponse === "" && this.textContentResponse.trim() === "") {
         return
       }
-      createCommentResponseInPlayer(this.player_id, this.textContentResponse)
+      const response = await createCommentResponseInPlayer(this.player_id, this.textContentResponse)
       this.textContentResponse = ""
+      console.log(response)
     },
+    async onLikeComment(id) {
+      const response = await sendLikeComment(id)
+      if (response?.ok) {
+        if (response?.creado) {
+          // agrega like
+          this.comentarios = this.comentarios.map((comentario) => {
+            if (comentario.id === id) {
+              comentario.likes += 1
+            }
+            return comentario
+          })
+        } else {
+          // quita like
+          this.comentarios = this.comentarios.map((comentario) => {
+            if (comentario.id === id) {
+              comentario.likes -= 1
+            }
+            return comentario
+          })
+        }
+      }
+    }
   }
 }
 </script>
@@ -393,7 +450,7 @@ export default {
 }
 
 .video-data-next:hover,
-.video-data-next:hover>svg {
+.video-data-next:hover > svg {
   color: #de9c39 !important;
 }
 
@@ -497,9 +554,10 @@ textarea {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  /* align-items: center; */
   margin-top: 4rem;
   row-gap: 2rem;
+  width: 100%;
 }
 
 .coments-title {
@@ -656,6 +714,16 @@ textarea {
 
   .courses-list {
     max-width: 640px;
+  }
+
+  .coments {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 4rem;
+    row-gap: 2rem;
+    width: 100%;
   }
 }
 
