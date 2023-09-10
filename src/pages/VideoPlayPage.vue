@@ -13,9 +13,7 @@
             controls
             preload="auto"
             data-setup=""
-          >
-            <!-- <source src="https://www.youtube.com/embed/<VIDEO_ID>" type="video/youtube" /> -->
-          </video>
+          ></video>
         </div>
         <div class="video-data">
           <div class="video-data-top">
@@ -36,11 +34,19 @@
               />
             </div>
             <div class="video-button">
-              <button @click="isLike = !isLike">
-                <HandThumbUpIcon class="icon" :style="isLike && 'color: #2a8df7'" />
+              <button
+                @click="likePlayer"
+                :style="isLike == true && 'background: linear-gradient(180deg, #32a3fb, #1455ec);'"
+              >
+                <HandThumbUpIcon class="icon" :style="isLike == true && 'color: #fff'" />
               </button>
               <button @click="showModal = true">
-                <ShareIcon class="icon" />
+                <!-- <ShareIcon class="icon" /> -->
+                <img
+                  style="width: 1.5rem"
+                  :src="require('../../public/share-icon.svg')"
+                  alt="descripción de la imagen"
+                />
               </button>
             </div>
           </div>
@@ -52,6 +58,17 @@
             <h2>Comentarios</h2>
           </div>
           <div class="coment">
+            <div class="create-coment" v-if="!showCreateComment">
+              <textarea
+                @keydown.enter.prevent
+                @input="adjustTextAreaHeight"
+                ref="myTextArea"
+                v-model="textContent"
+                rows="1"
+                placeholder="Escribe un comentario"
+              ></textarea>
+              <button class="create-coment-button" @click="createCommentPlayerCus">Comentar</button>
+            </div>
             <div class="coment-user">
               <div class="coment-user-info">
                 <UserIcon class="icon-user" />
@@ -63,9 +80,13 @@
                   opportunity to discuss it and share our thoughts and ideas.
                 </p>
                 <div class="coment-user-text-button">
-                  <button>Responder</button>
+                  <button @click="showResponseComment = !showResponseComment">Responder</button>
                   <button>0 Likes</button>
                 </div>
+              </div>
+              <div v-if="showResponseComment" style="display: flex; gap: 1rem">
+                <input v-model="textContentResponse" type="text" placeholder="Responder comentario" />
+                <button @click="createResponseCommentPlayerCus" class="create-coment-button">Responder</button>
               </div>
             </div>
 
@@ -110,6 +131,17 @@
         <h2>Comentarios</h2>
       </div>
       <div class="coment">
+        <div class="create-coment" v-if="!showCreateComment">
+          <textarea
+            @keydown.enter.prevent
+            @input="adjustTextAreaHeight"
+            ref="myTextArea"
+            v-model="textContent"
+            rows="1"
+            placeholder="Escribe un comentario"
+          ></textarea>
+          <button class="create-coment-button">Comentar</button>
+        </div>
         <div class="coment-user">
           <div class="coment-user-info">
             <UserIcon class="icon-user" />
@@ -121,8 +153,12 @@
               to discuss it and share our thoughts and ideas.
             </p>
             <div class="coment-user-text-button">
-              <button>Responder</button>
+              <button @click="showResponseComment = !showResponseComment">Responder</button>
               <button>0 Likes</button>
+            </div>
+            <div v-if="!showResponseComment" style="display: flex; gap: 1rem">
+              <input v-model="textContentResponse" type="text" placeholder="Responder comentario" />
+              <button @click="createResponseCommentPlayerCus" class="create-coment-button">Responder</button>
             </div>
           </div>
         </div>
@@ -171,7 +207,7 @@
         <a class="icon-twitter" :href="'https://twitter.com/share?url=' + currentUrl" target="_blank">
           <i class="fa-brands fa-twitter"></i>
         </a>
-        <a class="icon-instagram" href="#" target="_blank">
+        <a class="icon-instagram" href="#" @click="() => navigator.share">
           <i class="fa-brands fa-instagram"></i>
         </a>
         <a class="icon-whatsap" :href="'https://api.whatsapp.com/send?text=' + currentUrl" target="_blank">
@@ -200,6 +236,9 @@ import { HandThumbUpIcon, ShareIcon, ChevronRightIcon, StarIcon } from '@heroico
 import { StarIcon as StartIconOutline, UserIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import FooterH from '@/components/FooterH.vue';
 
+const { handleGetAllCourses, handleGetPlayer, createCommentInPlayer, createCommentResponseInPlayer } = useCourses()
+// sendLikeComment
+
 
 export default {
   name: 'VideoPlayer',
@@ -213,31 +252,49 @@ export default {
     UserIcon,
     XMarkIcon,
     FooterH
-},
+  },
   props: {
     options: {
       type: Object,
-      default () {
+      default() {
         return {
           techOrder: ['youtube'],
           sources: [{
             type: 'video/youtube',
             src: 'https://www.youtube.com/embed/cAn1dHmpBQA?autoplay=0&controls=0&disablekb=1&playsinline=1&cc_load_policy=0&cc_lang_pref=auto&widget_referrer=https%3A%2F%2Facademia.urbisfx.com%2Fplayer%2F6%2F&rel=0&showinfo=0&iv_load_policy=3&modestbranding=1&customControls=true&noCookie=false&enablejsapi=1&origin=https%3A%2F%2Facademia.urbisfx.com&widgetid=1',
           }],
-          youtube: { "customVars": { "wmode": "transparent" },  "ytControls": 0, "iv_load_policy": 1 }
+          youtube: { "customVars": { "wmode": "transparent" }, "ytControls": 0, "iv_load_policy": 1 }
         };
       }
     }
   },
   async mounted() {
+    this.player_id = this.$route.params.id;
     this.currentUrl = window.location.href;
     this.player = videojs(this.$refs.videoPlayer, this.options);
+    this.username = document.querySelector('meta[name=username]')
+    this.isLike  = JSON.parse(localStorage.getItem(`like-cap-${this.player_id}`))
+    this.currentRating = JSON.parse(localStorage.getItem(`cap-${this.player_id}`))
+    this.stars = this.stars.map((star, index) => index < this.currentRating);
+
+    if (this.username === '' || this.username === null || this.username === undefined) {
+      this.showCreateComment = false
+    } else {
+      this.showCreateComment = true
+    }
+
     try {
-      const { handleGetAllCourses } = useCourses();
+      const dataPlayer = await handleGetPlayer(this.player_id)
+      this.player_cap = dataPlayer.cap
+      this.player_comentarios = dataPlayer.comentarios
+      this.player_relacionados = dataPlayer.relacionados
+      console.log(dataPlayer)
       const data = await handleGetAllCourses()
       this.cursos = data.cursos
       this.banner = data.banner
       this.menu = data.menu
+
+
     } catch (error) {
       console.error('Error al obtener los cursos:', error);
     }
@@ -250,13 +307,23 @@ export default {
       player: null,
       stars: [false, false, false, false, false],
       currentRating: 0,
-      isLike: false,
+      isLike : false,
       showModal: false,
       currentUrl: "",
       isCopied: false,
+      textContent: "",
+      textContentResponse: '',
+      username: null,
+
+      showCreateComment: false,
+      showResponseComment: false,
+      player_id: "",
+      player_cap: {},
+      player_comentarios: [],
+      player_relacionados: {}
     }
   },
-  beforeUnmount () {
+  beforeUnmount() {
     if (this.player) {
       this.player.dispose();
     }
@@ -265,22 +332,65 @@ export default {
     rateVideo(rating) {
       this.currentRating = rating;
       this.stars = this.stars.map((star, index) => index < rating);
+      localStorage.setItem(`cap-${this.player_id}`, rating)
     },
     copyURL() {
-        this.isCopied = true
-        var input = document.querySelector('input[type="text"]');
-        input.select();
-        document.execCommand('copy');
-        setTimeout(() => {
-          this.isCopied = false
-        }, 3000 )
-    }
+      this.isCopied = true
+      var input = document.querySelector('input[type="text"]');
+      input.select();
+      document.execCommand('copy');
+      setTimeout(() => {
+        this.isCopied = false
+      }, 3000)
+    },
+    share() {
+      if (typeof navigator !== 'undefined' && navigator.share) {
+        navigator.share({
+          title: 'Título',
+          text: 'Texto para compartir',
+          url: 'https://ejemplo.com',
+        })
+          .then(() => {
+            // Contenido compartido exitosamente
+          })
+          .catch((error) => {
+            console.log(error)
+          });
+      } else {
+        // Tu navegador no soporta la API Web Share
+      }
+    },
+    likePlayer() {
+      this.isLike  = !this.isLike
+      localStorage.setItem(`like-cap-${this.player_id}`, this.isLike )
+    },
+    adjustTextAreaHeight() {
+      this.$refs.myTextArea.style.height = 'auto';
+      this.$refs.myTextArea.style.height = this.$refs.myTextArea.scrollHeight + 'px';
+    },
+
+    createCommentPlayerCus() {
+      if (this.textContent === "" && this.textContent.trim() === "") {
+        return
+      }
+      createCommentInPlayer(this.player_id, this.textContent)
+      this.textContent = ""
+    },
+
+    createResponseCommentPlayerCus() {
+      if (this.textContentResponse === "" && this.textContentResponse.trim() === "") {
+        return
+      }
+      createCommentResponseInPlayer(this.player_id, this.textContentResponse)
+      this.textContentResponse = ""
+    },
   }
 }
 </script>
 
 <style scoped>
 @import url('https://unpkg.com/@videojs/themes@1/dist/city/index.css');
+
 .content {
   padding-inline: 0.75rem;
   width: 100%;
@@ -316,6 +426,7 @@ export default {
   cursor: pointer;
   width: fit-content;
 }
+
 .video-data-next:hover,
 .video-data-next:hover > svg {
   color: #de9c39 !important;
@@ -373,6 +484,49 @@ export default {
 }
 
 /* Coments */
+.create-coment {
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+  column-gap: 1rem;
+}
+
+.input-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+textarea {
+  border: none;
+  outline: none;
+  flex-grow: 1;
+  font-size: 16px;
+  resize: none;
+  font-family: 'Netflix Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.create-coment-button {
+  cursor: pointer;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding-block: 0.5rem;
+  padding-inline: 1rem;
+}
+
+.create-coment-button:hover {
+  background-color: #0056b3;
+}
+
 .coments,
 .coments-max {
   display: flex;
@@ -431,6 +585,7 @@ export default {
   flex-direction: column;
   row-gap: 0.5rem;
 }
+
 .coment-user-text p {
   line-height: 1.5rem;
 }
@@ -474,6 +629,18 @@ export default {
     max-width: 640px;
     width: 500px;
     height: 350px;
+  }
+
+  .content-video {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 550px) {
+  .video-custom {
+    max-width: 350px;
+    width: 350px;
+    height: 250px;
   }
 
   .content-video {
@@ -662,6 +829,7 @@ export default {
   background-color: #1877f2;
   color: #fff;
 }
+
 .icon-twitter {
   font-size: 1.5rem;
   width: 3rem;
@@ -676,6 +844,7 @@ export default {
   align-items: center;
   transition: all 0.3s ease;
 }
+
 .icon-twitter:hover {
   background-color: #46c1f6;
   color: #fff;
@@ -695,6 +864,7 @@ export default {
   align-items: center;
   transition: all 0.3s ease;
 }
+
 .icon-instagram:hover {
   background-color: #e1306c;
   color: #fff;
@@ -714,10 +884,12 @@ export default {
   align-items: center;
   transition: all 0.3s ease;
 }
+
 .icon-whatsap:hover {
   background-color: #25d366;
   color: #fff;
 }
+
 .icon-telegram {
   font-size: 1.5rem;
   width: 3rem;
@@ -732,6 +904,7 @@ export default {
   align-items: center;
   transition: all 0.3s ease;
 }
+
 .icon-telegram:hover {
   background-color: #0088cc;
   color: #fff;

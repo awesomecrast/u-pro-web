@@ -42,7 +42,7 @@
   <!-- Nav mobile -->
   <nav class="nav nav-mobile">
     <div class="nav-section-1">
-      <router-link :to="{ name: 'home' }">
+      <router-link :to="{ name: 'home' }" style="overflow: hidden">
         <img src="https://academia.urbisfx.com/media/Sin_t%C3%ADtulo_1080100px.png" alt="" />
       </router-link>
     </div>
