@@ -100,9 +100,9 @@
           </div>
         </div> -->
       </div>
-      <router-link :to="{ name: 'home' }" class="nav-user">
+      <a href="/profile" class="nav-user">
         <img src="https://academia.urbisfx.com/static/assets/img/user.svg" alt="" />
-      </router-link>
+      </a>
     </div>
   </nav>
 
@@ -140,7 +140,7 @@ export default {
     showOnlyNav: {
       type: Boolean,
       default: false
-    }
+    },
   },
   data() {
       return {

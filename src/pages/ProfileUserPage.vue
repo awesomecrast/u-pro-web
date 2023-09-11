@@ -1,22 +1,25 @@
 <template>
+  <div style="background-color: #0b0d1b !important; width: 100%; height: 5rem; overflow: hidden">
+    <NavBar :banner="banner" :menu="menu" :showOnlyNav="true" />
+  </div>
   <div class="muro">
     <div class="profile-content">
       <div class="profile">
         <div class="profile-img">
-          <img src="https://th.bing.com/th/id/OIP.gAp5VXTOGXFMcfQZ_IjusgAAAA?pid=ImgDet&rs=1" alt="profile" />
+          <img :src="dataPublic.avatar" alt="profile" />
         </div>
         <div class="profile-info">
-          <h2>dream SUBMISSION blog</h2>
-          <h3>@{{ username }}</h3>
-          <span>💎</span>
-          <p>
+          <h2>{{ dataPublic.nombre }}</h2>
+          <h3>@{{ dataPublic.username }}</h3>
+          <span v-if="dataPublic.tipo?.logo !== null">{{ dataPublic.tipo?.logo }}</span>
+          <p v-if="'descripcion' in dataPublic && dataPublic.descripcion !== null">
             A pro player is a professional gamer who competes in organized video game tournaments and leagues for cash
             prizes 🎶
           </p>
         </div>
       </div>
 
-      <div class="create-publication">
+      <div v-if="usernameMeta.content === ''" class="create-publication">
         <textarea
           @input="adjustTextAreaHeight"
           ref="myTextArea"
@@ -29,52 +32,24 @@
 
       <!-- Publication -->
       <div class="publications">
-        <div class="publication">
+        <div v-for="(publication, index) in dataPublic.posts" :key="index" class="publication">
           <div class="publication-user">
-            <img src="https://th.bing.com/th/id/OIP.gAp5VXTOGXFMcfQZ_IjusgAAAA?pid=ImgDet&rs=1" alt="profile" />
+            <img :src="dataPublic.avatar" alt="profile" />
             <div class="publication-user-name">
-              <h3>@{{ username }} 💎</h3>
+              <h3>@{{ dataPublic.username }}</h3>
               <!-- <button>Seguir</button> -->
             </div>
           </div>
           <div class="publication-content">
             <p>
-              “Good evening everyone! This is a dream come true for me. Ever since I was a kid, I’ve always wanted to be
-              here, in front of all of you, sharing the music I love. Tonight, we’re going to dive into the world of
-              Phonk, a genre that combines the best of hip-hop, funk, and soul. We’re going to journey together through
-              raw beats, smooth jazz samples, and deep bass lines. So get ready, because tonight, we’re going to raise
-              the energy and celebrate life through music. Let’s do this!” 😊
+              {{ publication.text }}
             </p>
-            <button v-if="!isLike" class="publication-content-like" @click="isLike = true">
+            <!-- <button v-if="!isLike" class="publication-content-like" @click="isLike = true">
               <HeartIconOutline class="icon" />
             </button>
             <button v-else class="publication-content-like" @click="isLike = false">
               <HeartIcon class="icon-like" />
-            </button>
-          </div>
-        </div>
-        <div class="publication">
-          <div class="publication-user">
-            <img src="https://th.bing.com/th/id/OIP.gAp5VXTOGXFMcfQZ_IjusgAAAA?pid=ImgDet&rs=1" alt="profile" />
-            <div class="publication-user-name">
-              <h3>@{{ username }} 💎</h3>
-              <!-- <button>Seguir</button> -->
-            </div>
-          </div>
-          <div class="publication-content">
-            <p>
-              “Good evening everyone! This is a dream come true for me. Ever since I was a kid, I’ve always wanted to be
-              here, in front of all of you, sharing the music I love. Tonight, we’re going to dive into the world of
-              Phonk, a genre that combines the best of hip-hop, funk, and soul. We’re going to journey together through
-              raw beats, smooth jazz samples, and deep bass lines. So get ready, because tonight, we’re going to raise
-              the energy and celebrate life through music. Let’s do this!” 😊
-            </p>
-            <button v-if="!isLike" class="publication-content-like" @click="isLike = true">
-              <HeartIconOutline class="icon" />
-            </button>
-            <button v-else class="publication-content-like" @click="isLike = false">
-              <HeartIcon class="icon-like" />
-            </button>
+            </button> -->
           </div>
         </div>
       </div>
@@ -83,27 +58,42 @@
 </template>
 
 <script lang="js">
-import { HeartIcon, PaperAirplaneIcon } from '@heroicons/vue/24/solid';
-import { HeartIcon as HeartIconOutline } from '@heroicons/vue/24/outline';
+import {  PaperAirplaneIcon } from '@heroicons/vue/24/solid';
+// import { HeartIcon as HeartIconOutline } from '@heroicons/vue/24/outline';
+import NavBar from '@/components/NavBar.vue';
+import useProfilePublic from "@/composables/useProfilePublic"
+
+const { handleGetDataProfilePublic } = useProfilePublic()
 
 export default {
-  mounted() {
-
+  async mounted() {
+    try {
+      const dataProfilePublic = await handleGetDataProfilePublic()
+      this.usernameMeta = document.querySelector('meta[name=username]')
+      console.log(this.usernameMeta.content === "")
+      this.dataPublic = dataProfilePublic.profile
+      console.log(dataProfilePublic.profile)
+    } catch (error) {
+      console.log(error)
+    }
   },
   created() {
     const username = this.$route.params.username;
     this.username = username
   },
   components: {
-    HeartIcon,
-    HeartIconOutline,
-    PaperAirplaneIcon
+    // HeartIcon,
+    // HeartIconOutline,
+    PaperAirplaneIcon,
+    NavBar
   },
   data() {
     return {
       isLike: false,
       username: "",
-      textContent: ""
+      usernameMeta: "",
+      textContent: "",
+      dataPublic: {}
     }
   },
   methods: {
