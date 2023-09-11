@@ -125,15 +125,16 @@ import { Bars3Icon } from '@heroicons/vue/24/solid';
 export default {
   mounted() {
     document.body.addEventListener('click', this.closeShowMoreFlagOnClick);
+    this.menuMeta = document.querySelector('meta[name=menu]').content
   },
   components: {
     VueSpinner,
     Bars3Icon
   },
   props: {
-    menu: {
-      type: Array,
-    },
+    // menu: {
+    //   type: Array,
+    // },
     banner: {
       type: Object,
     },
@@ -144,6 +145,7 @@ export default {
   },
   data() {
       return {
+        menu: JSON.parse(document.querySelector('meta[name=menu]').content).menu,
         loading: true,
         showMoreFlag: false,
         showMenuMobile: false,
