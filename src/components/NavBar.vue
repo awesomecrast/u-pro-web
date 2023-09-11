@@ -12,7 +12,7 @@
         </li>
 
         <li class="link" v-if="item.tiene_icono">
-          <a href="/"><img :src="item.icono" :alt="item.nombre" /></a>
+          <a :href="item.link"><img :src="item.icono" :alt="item.nombre" /></a>
         </li>
       </ul>
     </div>
@@ -33,9 +33,9 @@
           </div>
         </div>
       </div>
-      <router-link :to="{ name: 'home' }" class="nav-user">
+      <a href="/profile" class="nav-user">
         <img src="https://academia.urbisfx.com/static/assets/img/user.svg" alt="" />
-      </router-link>
+      </a>
     </div>
   </nav>
 
