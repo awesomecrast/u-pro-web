@@ -13,10 +13,11 @@
     <div class="content" style="backdrop-filter: blur(25px); background-color: rgba(0, 0, 0, 0.65)">
       <div class="content-max">
         <div class="content-video">
-          <div>
+          <div style="width: 100%">
             <!-- width="640"
               height="264" -->
             <video
+              v-if="player_cap.es_audio == false"
               id="vid1"
               ref="videoPlayer"
               class="video-js vjs-default-skin video-custom"
@@ -26,6 +27,10 @@
               preload="auto"
               data-setup=""
             ></video>
+            <audio v-if="player_cap.es_audio == true" class="audio-custom" controls style="width: 640px">
+              <source :src="player_cap.audio_url" type="audio/mpeg" />
+              Your browser does not support the audio element.
+            </audio>
           </div>
           <div class="video-data">
             <div class="video-data-top">
@@ -327,6 +332,10 @@ export default {
     }
   },
   methods: {
+    likePlayer() {
+      this.isLike = !this.isLike
+      localStorage.setItem(`like-cap-${this.player_id}`, this.isLike)
+    },
     rateVideo(rating) {
       this.currentRating = rating;
       this.stars = this.stars.map((star, index) => index < rating);
@@ -358,15 +367,10 @@ export default {
         // Tu navegador no soporta la API Web Share
       }
     },
-    likePlayer() {
-      this.isLike = !this.isLike
-      localStorage.setItem(`like-cap-${this.player_id}`, this.isLike)
-    },
     adjustTextAreaHeight() {
       this.$refs.myTextArea.style.height = 'auto';
       this.$refs.myTextArea.style.height = this.$refs.myTextArea.scrollHeight + 'px';
     },
-
     async createCommentPlayerCus() {
       if (this.textContent === "" && this.textContent.trim() === "") {
         return
@@ -375,7 +379,6 @@ export default {
       this.textContent = ""
       console.log(response)
     },
-
     async createResponseCommentPlayerCus() {
       if (this.textContentResponse === "" && this.textContentResponse.trim() === "") {
         return
@@ -480,6 +483,12 @@ export default {
 
 .video-button button:hover {
   background-color: #7a7a7a;
+}
+
+@media (max-width: 660px) {
+  .audio-custom {
+    width: 100% !important;
+  }
 }
 
 .icon {

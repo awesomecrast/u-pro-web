@@ -13,12 +13,24 @@
     <div class="content" style="backdrop-filter: blur(25px); background-color: rgba(0, 0, 0, 0.65)">
       <div class="content-max">
         <div class="content-video">
-          <div>
+          <div style="width: 100%">
             <!-- width="640"
               height="264" -->
-            <video-js ref="videoPlayer" class="vjs-default-skin video-custom" controls width="640" height="268">
-              <source :src="videoUrl" type="application/x-mpegURL" />
-            </video-js>
+            <video
+              v-if="player_cap.es_audio == false"
+              id="vid1"
+              ref="videoPlayer"
+              class="video-js vjs-default-skin video-custom"
+              width="840"
+              height="464"
+              controls
+              preload="auto"
+              data-setup=""
+            ></video>
+            <audio v-if="player_cap.es_audio == true" class="audio-custom" controls style="width: 640px">
+              <source :src="player_cap.audio_url" type="audio/mpeg" />
+              Your browser does not support the audio element.
+            </audio>
           </div>
           <div class="video-data">
             <div class="video-data-top">
@@ -210,7 +222,6 @@
   </div>
   <FooterH :showButton="true" />
 </template>
-
 <script lang="js">
 import 'video.js/dist/video-js.css'
 import videojs from 'video.js'
@@ -220,7 +231,7 @@ import useCourses from "@/composables/useCourses"
 import { HandThumbUpIcon, ShareIcon, ChevronRightIcon, StarIcon } from '@heroicons/vue/24/solid';
 import { StarIcon as StartIconOutline, UserIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import FooterH from '@/components/FooterH.vue';
-const { handleGetAllCourses, handleGetPlayer, createCommentInPlayer, createCommentResponseInPlayer } = useCourses()
+const { handleGetPlayer, createCommentInPlayer, createCommentResponseInPlayer, sendLikeComment, handleGetAllCourses } = useCourses()
 
 export default {
   name: 'VideoPlayer',
@@ -234,29 +245,25 @@ export default {
     UserIcon,
     XMarkIcon,
     FooterH
-},
-  props: {
-    // options: {
-    //   type: Object,
-    //   default () {
-    //     return {
-    //       techOrder: ['youtube'],
-    //       sources: [{
-    //         type: 'video/youtube',
-    //         src: 'https://www.youtube.com/embed/cAn1dHmpBQA?autoplay=0&controls=0&disablekb=1&playsinline=1&cc_load_policy=0&cc_lang_pref=auto&widget_referrer=https%3A%2F%2Facademia.urbisfx.com%2Fplayer%2F6%2F&rel=0&showinfo=0&iv_load_policy=3&modestbranding=1&customControls=true&noCookie=false&enablejsapi=1&origin=https%3A%2F%2Facademia.urbisfx.com&widgetid=1',
-    //       }],
-    //       youtube: { "customVars": { "wmode": "transparent" },  "ytControls": 0, "iv_load_policy": 1 }
-    //     };
-    //   }
-    // }
+  },
+  computed: {
+    videoOptions() {
+      return {
+        techOrder: ['youtube'],
+        autoplay: false,
+        sources: [{
+          type: 'video/youtube',
+          src: this.player_cap.youtube_link
+        }]
+      }
+    }
   },
   async mounted() {
     this.player_id = this.$route.params.id;
     this.currentUrl = window.location.href;
-    this.player = videojs(this.$refs.videoPlayer, this.options);
-    this.player = videojs(this.$refs.videoPlayer);
     this.username = document.querySelector('meta[name=username]')
-    this.isLike  = JSON.parse(localStorage.getItem(`like-cap-live-${this.player_id}`))
+    this.avatar = document.querySelector('meta[name=avatar]')
+    this.isLike = JSON.parse(localStorage.getItem(`like-cap-live-${this.player_id}`))
     this.currentRating = JSON.parse(localStorage.getItem(`cap-live-${this.player_id}`))
     this.stars = this.stars.map((star, index) => index < this.currentRating);
 
@@ -271,6 +278,7 @@ export default {
       this.player_cap = dataPlayer.cap
       this.player_comentarios = dataPlayer.comentarios
       this.player_relacionados = dataPlayer.relacionados
+      this.player = videojs(this.$refs.videoPlayer, this.videoOptions);
 
       const data = await handleGetAllCourses()
       this.cursos = data.cursos
@@ -296,6 +304,7 @@ export default {
       textContent: "",
       textContentResponse: '',
       username: null,
+      avatar: "",
 
       showCreateComment: false,
       showResponseComment: false,
@@ -305,15 +314,23 @@ export default {
       player_relacionados: {}
     }
   },
-  beforeUnmount () {
+  beforeUnmount() {
     if (this.player) {
       this.player.dispose();
     }
   },
+  watch: {
+    'player_cap.youtube_link': function (newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.player.src({ type: 'video/youtube', src: newVal });
+        this.player.load();
+      }
+    }
+  },
   methods: {
     likePlayer() {
-      this.isLike  = !this.isLike
-      localStorage.setItem(`like-cap-live-${this.player_id}`, this.isLike )
+      this.isLike = !this.isLike
+      localStorage.setItem(`like-cap-live-${this.player_id}`, this.isLike)
     },
     rateVideo(rating) {
       this.currentRating = rating;
@@ -321,29 +338,73 @@ export default {
       localStorage.setItem(`cap-live-${this.player_id}`, rating)
     },
     copyURL() {
-        this.isCopied = true
-        var input = document.querySelector('input[type="text"]');
-        input.select();
-        document.execCommand('copy');
-        setTimeout(() => {
-          this.isCopied = false
-        }, 3000 )
+      this.isCopied = true
+      var input = document.querySelector('input[type="text"]');
+      input.select();
+      document.execCommand('copy');
+      setTimeout(() => {
+        this.isCopied = false
+      }, 3000)
     },
-    createCommentPlayerCus() {
+    share() {
+      if (typeof navigator !== 'undefined' && navigator.share) {
+        navigator.share({
+          title: 'Título',
+          text: 'Texto para compartir',
+          url: 'https://ejemplo.com',
+        })
+          .then(() => {
+            // Contenido compartido exitosamente
+          })
+          .catch((error) => {
+            console.log(error)
+          });
+      } else {
+        // Tu navegador no soporta la API Web Share
+      }
+    },
+    adjustTextAreaHeight() {
+      this.$refs.myTextArea.style.height = 'auto';
+      this.$refs.myTextArea.style.height = this.$refs.myTextArea.scrollHeight + 'px';
+    },
+    async createCommentPlayerCus() {
       if (this.textContent === "" && this.textContent.trim() === "") {
         return
       }
-      createCommentInPlayer(this.player_id, this.textContent)
+      const response = await createCommentInPlayer(this.player_id, this.textContent)
       this.textContent = ""
+      console.log(response)
     },
-
-    createResponseCommentPlayerCus() {
+    async createResponseCommentPlayerCus() {
       if (this.textContentResponse === "" && this.textContentResponse.trim() === "") {
         return
       }
-      createCommentResponseInPlayer(this.player_id, this.textContentResponse)
+      const response = await createCommentResponseInPlayer(this.player_id, this.textContentResponse)
       this.textContentResponse = ""
+      console.log(response)
     },
+    async onLikeComment(id) {
+      const response = await sendLikeComment(id)
+      if (response?.ok) {
+        if (response?.creado) {
+          // agrega like
+          this.comentarios = this.comentarios.map((comentario) => {
+            if (comentario.id === id) {
+              comentario.likes += 1
+            }
+            return comentario
+          })
+        } else {
+          // quita like
+          this.comentarios = this.comentarios.map((comentario) => {
+            if (comentario.id === id) {
+              comentario.likes -= 1
+            }
+            return comentario
+          })
+        }
+      }
+    }
   }
 }
 </script>
@@ -420,6 +481,12 @@ export default {
   background-color: #7a7a7a;
 }
 
+@media (max-width: 660px) {
+  .audio-custom {
+    width: 100% !important;
+  }
+}
+
 .icon {
   width: 1.5rem;
   color: #fff;
@@ -492,9 +559,10 @@ textarea {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  /* align-items: center; */
   margin-top: 4rem;
   row-gap: 2rem;
+  width: 100%;
 }
 
 .coments-title {
@@ -651,6 +719,16 @@ textarea {
 
   .courses-list {
     max-width: 640px;
+  }
+
+  .coments {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 4rem;
+    row-gap: 2rem;
+    width: 100%;
   }
 }
 
