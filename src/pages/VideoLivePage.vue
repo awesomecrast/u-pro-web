@@ -25,7 +25,6 @@
               height="464"
               controls
               preload="auto"
-              data-setup=""
             ></video>
             <audio v-if="player_cap.es_audio == true" class="audio-custom" controls style="width: 640px">
               <source :src="player_cap.audio_url" type="audio/mpeg" />
@@ -278,12 +277,13 @@ export default {
       this.player_cap = dataPlayer.cap
       this.player_comentarios = dataPlayer.comentarios
       this.player_relacionados = dataPlayer.relacionados
-      this.player = videojs(this.$refs.videoPlayer, this.videoOptions);
+
 
       const data = await handleGetAllCourses()
       this.cursos = data.cursos
       this.banner = data.banner
       this.menu = data.menu
+      this.player = videojs(this.$refs.videoPlayer, this.videoOptions);
     } catch (error) {
       console.error('Error al obtener los cursos:', error);
     }
@@ -320,13 +320,15 @@ export default {
     }
   },
   watch: {
-    'player_cap.youtube_link': function (newVal, oldVal) {
+    'player_cap': function (newVal, oldVal) {
       if (newVal !== oldVal) {
-        this.player.src({ type: 'video/youtube', src: newVal });
-        this.player.load();
+        if (this.player) {
+          this.player.src({ type: 'video/youtube', src: newVal });
+          this.player.load();
+        }
       }
     }
-  },
+},
   methods: {
     likePlayer() {
       this.isLike = !this.isLike

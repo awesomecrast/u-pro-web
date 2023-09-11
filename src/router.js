@@ -18,6 +18,7 @@ const routes = [
   },
   {
     path: '/play/:id',
+    alias: '/player/:id',
     name: 'play-video',
     component: () => import('./pages/VideoPlayPage.vue'),
   },
