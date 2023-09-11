@@ -11,7 +11,7 @@
         <div class="profile-info">
           <h2>{{ dataPublic.nombre }}</h2>
           <h3>@{{ dataPublic.username }}</h3>
-          <span v-if="dataPublic.tipo?.logo !== null">{{ dataPublic.tipo?.logo }}</span>
+          <span v-if="dataPublic.tipo?.logo !== null"><img style="height:35px;" :src="dataPublic.tipo?.logo" /></span>
           <p v-if="'descripcion' in dataPublic && dataPublic.descripcion !== null">
             A pro player is a professional gamer who competes in organized video game tournaments and leagues for cash
             prizes 🎶
