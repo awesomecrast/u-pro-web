@@ -68,7 +68,7 @@ const { handleGetDataProfilePublic } = useProfilePublic()
 export default {
   async mounted() {
     try {
-      const dataProfilePublic = await handleGetDataProfilePublic()
+      const dataProfilePublic = await handleGetDataProfilePublic(this.$route.params.username)
       this.usernameMeta = document.querySelector('meta[name=username]')
       console.log(this.usernameMeta.content === "")
       this.dataPublic = dataProfilePublic.profile
