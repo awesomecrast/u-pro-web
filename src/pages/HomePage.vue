@@ -155,13 +155,13 @@ export default {
   margin-bottom: 20px;
 }
 
-/* .card:hover {
+.card:hover {
   background-image: var(--background-image);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   border: 4px solid #fff;
-} */
+}
 
 .card img {
   width: 15rem;
