@@ -32,7 +32,7 @@ body {
 
 body {
   user-select: none;
-  font-family: "Netflix Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: 'Netflix Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   background-color: rgba(11, 13, 27);
   color: #ffffff;
 }
@@ -57,6 +57,16 @@ a {
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
+}
+
+.swiper-wrapper {
+  padding-block: 1rem !important;
+}
+
+.swiper-slide:hover {
+  transform: scale(1.2);
+  z-index: 1;
 }
 
 .swiper-slide img {

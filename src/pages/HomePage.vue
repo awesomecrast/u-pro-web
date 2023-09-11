@@ -254,7 +254,7 @@ export default {
   border: 4px transparent;
   border-radius: 10px;
   position: relative;
-  overflow: hidden;
+  /* overflow: hidden; */
   max-width: 341px;
 }
 
@@ -267,15 +267,19 @@ export default {
   background-position: center;
   border: 4px solid #fff;
   background-color: rgba(0, 0, 0, 0.5);
-  /* Fondo negro opaco */
 }
 
 .card-course img {
   transition: all 0.3s ease-in-out;
+  border-radius: 10px;
 }
 
 .card-course:hover > img {
+  /* transform: scale(1.2); */
+  position: fixed;
   transform: scale(1.2);
+  z-index: 99999;
+  top: 0;
 }
 
 .additional-info {

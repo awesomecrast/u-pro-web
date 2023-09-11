@@ -74,6 +74,17 @@
               <h2>Comentarios</h2>
             </div>
             <div class="coment">
+              <div class="create-coment" v-if="!showCreateComment">
+                <textarea
+                  @keydown.enter.prevent
+                  @input="adjustTextAreaHeight"
+                  ref="myTextArea"
+                  v-model="textContent"
+                  rows="1"
+                  placeholder="Escribe un comentario"
+                ></textarea>
+                <button class="create-coment-button">Comentar</button>
+              </div>
               <div class="coment-user" v-for="comment in player_comentarios" v-bind:key="comment.id">
                 <div class="coment-user-info">
                   <!-- <UserIcon class="icon-user" /> -->
