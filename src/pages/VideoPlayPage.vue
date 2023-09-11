@@ -74,7 +74,7 @@
               <h2>Comentarios</h2>
             </div>
             <div class="coment">
-              <div class="create-coment" v-if="!showCreateComment">
+              <div class="create-coment" v-if="showCreateComment">
                 <textarea
                   @keydown.enter.prevent
                   @input="adjustTextAreaHeight"
@@ -100,12 +100,20 @@
                     {{ comment.text }}
                   </p>
                   <div class="coment-user-text-button">
-                    <button @click="showResponseComment = !showResponseComment">Responder</button>
-                    <button @click="onLikeComment(comment.id)">{{ comment.likes }} Likes</button>
+                    <button @click="textContentResponse[comment.id].show = !textContentResponse[comment.id].show">
+                      Responder
+                    </button>
+                    <button :class="comment.dio_like === true ? color : '#3799e5'">{{ comment.likes }} Likes</button>
                   </div>
-                  <div v-if="!showResponseComment" style="display: flex; gap: 1rem">
-                    <input v-model="textContentResponse" type="text" placeholder="Responder comentario" />
-                    <button @click="createResponseCommentPlayerCus" class="create-coment-button">Responder</button>
+                  <div v-if="textContentResponse[comment.id].show" style="display: flex; gap: 1rem">
+                    <input
+                      v-model="textContentResponse[comment.id].text"
+                      type="text"
+                      placeholder="Responder comentario"
+                    />
+                    <button @click="createResponseCommentPlayerCus(comment.id)" class="create-coment-button">
+                      Responder
+                    </button>
                   </div>
                 </div>
 
@@ -142,7 +150,7 @@
           <h2>Comentarios</h2>
         </div>
         <div class="coment">
-          <div class="create-coment" v-if="!showCreateComment">
+          <div class="create-coment" v-if="showCreateComment">
             <textarea
               @keydown.enter.prevent
               @input="adjustTextAreaHeight"
@@ -164,12 +172,16 @@
                 {{ comment.text }}
               </p>
               <div class="coment-user-text-button">
-                <button @click="showResponseComment = !showResponseComment">Responder</button>
-                <button>{{ comment.likes }} Likes</button>
+                <button @click="textContentResponse[comment.id].show = !textContentResponse[comment.id].show">
+                  Responder
+                </button>
+                <button :class="comment.dio_like === true ? color : '#3799e5'">{{ comment.likes }} Likes</button>
               </div>
-              <div v-if="!showResponseComment" style="display: flex; gap: 1rem">
-                <input v-model="textContentResponse" type="text" placeholder="Responder comentario" />
-                <button @click="createResponseCommentPlayerCus" class="create-coment-button">Responder</button>
+              <div v-if="textContentResponse[comment.id].show" style="display: flex; gap: 1rem">
+                <input v-model="textContentResponse[comment.id].text" type="text" placeholder="Responder comentario" />
+                <button @click="createResponseCommentPlayerCus(comment.id)" class="create-coment-button">
+                  Responder
+                </button>
               </div>
             </div>
 
@@ -274,12 +286,13 @@ export default {
   async mounted() {
     this.player_id = this.$route.params.id;
     this.currentUrl = window.location.href;
-    this.username = document.querySelector('meta[name=username]')
+    this.username = document.querySelector('meta[name=username]').content
     this.avatar = document.querySelector('meta[name=avatar]')
     this.isLike = JSON.parse(localStorage.getItem(`like-cap-${this.player_id}`))
     this.currentRating = JSON.parse(localStorage.getItem(`cap-${this.player_id}`))
     this.stars = this.stars.map((star, index) => index < this.currentRating);
 
+    console.log(this.username)
     if (this.username === '' || this.username === null || this.username === undefined) {
       this.showCreateComment = false
     } else {
@@ -289,7 +302,10 @@ export default {
     try {
       const dataPlayer = await handleGetPlayer(this.player_id)
       this.player_cap = dataPlayer.cap
-      this.player_comentarios = dataPlayer.comentarios
+      dataPlayer.comentarios.map(comentario => {
+        this.showResponseComment[comentario.id] = { show: false, text: '' }
+      })
+      this.player_comentarios = dataPlayer.comentarios.map
       this.player_relacionados = dataPlayer.relacionados
 
       const data = await handleGetAllCourses()
@@ -314,12 +330,12 @@ export default {
       currentUrl: "",
       isCopied: false,
       textContent: "",
-      textContentResponse: '',
+      textContentResponse: {},
       username: null,
       avatar: "",
 
       showCreateComment: false,
-      showResponseComment: false,
+      showResponseComment: {},
       player_id: "",
       player_cap: {},
       player_comentarios: [],
@@ -390,12 +406,12 @@ export default {
       this.textContent = ""
       console.log(response)
     },
-    async createResponseCommentPlayerCus() {
+    async createResponseCommentPlayerCus(id) {
       if (this.textContentResponse === "" && this.textContentResponse.trim() === "") {
         return
       }
-      const response = await createCommentResponseInPlayer(this.player_id, this.textContentResponse)
-      this.textContentResponse = ""
+      const response = await createCommentResponseInPlayer(id, this.textContentResponse[id].text)
+      this.textContentResponse[id].text = ""
       console.log(response)
     },
     async onLikeComment(id) {
@@ -403,17 +419,19 @@ export default {
       if (response?.ok) {
         if (response?.creado) {
           // agrega like
-          this.comentarios = this.comentarios.map((comentario) => {
+          this.comentarios = this.player_comentarios.map((comentario) => {
             if (comentario.id === id) {
               comentario.likes += 1
+              comentario.dio_like = true
             }
             return comentario
           })
         } else {
           // quita like
-          this.comentarios = this.comentarios.map((comentario) => {
+          this.comentarios = this.player_comentarios.map((comentario) => {
             if (comentario.id === id) {
               comentario.likes -= 1
+              comentario.dio_like = false
             }
             return comentario
           })
