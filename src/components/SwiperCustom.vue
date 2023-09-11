@@ -1,7 +1,7 @@
 <template>
   <swiper
     :slides-per-view="15"
-    :space-between="10"
+    :space-between="20"
     :loop="true"
     :navigation="true"
     :modules="modules"

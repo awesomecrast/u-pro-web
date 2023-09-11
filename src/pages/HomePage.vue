@@ -31,11 +31,11 @@
           :key="capitulo.id"
           @click="redirectToCourse(capitulo)"
         >
-          <img class="course-miniatura" :src="capitulo.miniatura" alt="img" />
-          <div class="additional-info">
+          <img class="course-miniatura" :src="'https://academia.urbisfx.com/' + capitulo.miniatura" alt="img" />
+          <!-- <div class="additional-info">
             <h2>{{ capitulo.nombre }}</h2>
             <p>Descripcion</p>
-          </div>
+          </div> -->
         </swiper-slide>
       </SwiperCustom>
     </div>
@@ -268,6 +268,14 @@ export default {
   border: 4px solid #fff;
   background-color: rgba(0, 0, 0, 0.5);
   /* Fondo negro opaco */
+}
+
+.card-course img {
+  transition: all 0.3s ease-in-out;
+}
+
+.card-course:hover > img {
+  transform: scale(1.2);
 }
 
 .additional-info {
