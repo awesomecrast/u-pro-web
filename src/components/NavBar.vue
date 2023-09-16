@@ -107,9 +107,16 @@
   </nav>
 
   <VueSpinner class="loader" v-if="loading && !showOnlyNav" size="60" color="white" />
-  <video v-if="!showOnlyNav" class="video-header" autoplay loop muted :src="banner.video_banner"
-    @canplay="videoLoaded"></video>
-  <div v-if="!showOnlyNav" class="banner-flot" :style="$route.name == 'home' ? { 'top': 'calc(81.5vh - 250px)' } : {}">
+  <video
+    v-if="!showOnlyNav"
+    class="video-header"
+    autoplay
+    loop
+    muted
+    :src="banner.video_banner"
+    @canplay="videoLoaded"
+  ></video>
+  <div v-if="!showOnlyNav" class="banner-flot" :style="$route.name == 'home' ? { top: 'calc(81.5vh - 250px)' } : {}">
     <h3>{{ banner.titulo }}</h3>
     <h4>{{ banner.subtitulo }}</h4>
     <h5>{{ banner.texto }}</h5>
@@ -146,7 +153,8 @@ export default {
   },
   data() {
     return {
-      menu: JSON.parse(document.querySelector('meta[name=menu]').content).menu,
+      // JSON.parse(document.querySelector('meta[name=menu]').content).menu ||
+      menu: {},
       loading: true,
       showMoreFlag: false,
       showMenuMobile: false,
@@ -199,102 +207,95 @@ export default {
   width: 100%;
 }
 
-@media(min-width:1000px) {
+@media (min-width: 1000px) {
   .banner-flot {
     margin-inline: 8.5rem;
   }
 }
 
-@media(min-width:1280px) {
+@media (min-width: 1280px) {
   .banner-flot {
     margin-inline: 3.5rem;
   }
 }
 
-@media(min-width:1300px) {
+@media (min-width: 1300px) {
   .banner-flot {
     margin-inline: 6.5rem;
   }
 }
 
-@media(min-width:1600px) {
+@media (min-width: 1600px) {
   .banner-flot {
     margin-inline: 4.5rem;
   }
 }
 
-@media(min-width:1800px) {
+@media (min-width: 1800px) {
   .banner-flot {
     margin-inline: 10.75rem;
   }
 }
 
-@media(min-width:1920px) {
+@media (min-width: 1920px) {
   .banner-flot {
     margin-inline: 2.75rem;
   }
 }
 
-
-@media(min-width:2048px) {
+@media (min-width: 2048px) {
   .banner-flot {
     margin-inline: 7.3rem;
   }
 }
 
-
-@media(min-width:2300px) {
+@media (min-width: 2300px) {
   .banner-flot {
     margin-inline: 3.75rem;
   }
 }
 
-@media(min-width:2560px) {
+@media (min-width: 2560px) {
   .banner-flot {
     margin-inline: 11.75rem;
   }
 }
 
-@media(min-width:2700px) {
+@media (min-width: 2700px) {
   .banner-flot {
     margin-inline: 4.75rem;
   }
 }
 
-@media(min-width:2900px) {
+@media (min-width: 2900px) {
   .banner-flot {
     margin-inline: 10.75rem;
   }
 }
 
-@media(min-width:3000px) {
+@media (min-width: 3000px) {
   .banner-flot {
     margin-inline: 2.75rem;
   }
 }
 
-@media(min-width:3500px) {
+@media (min-width: 3500px) {
   .banner-flot {
     margin-inline: 6.75rem;
   }
 }
 
-@media(min-width:3600px) {
+@media (min-width: 3600px) {
   .banner-flot {
     margin-inline: 9.75rem;
   }
 }
 
-@media(min-width:3840px) {
+@media (min-width: 3840px) {
   .banner-flot {
     margin-inline: 3.1rem;
   }
 }
-
-
-
-
-
 
 .nav a {
   max-width: 205px;
@@ -414,7 +415,6 @@ export default {
   }
 
   .banner-flot {
-
     display: none !important;
   }
 }
@@ -458,7 +458,6 @@ export default {
   display: flex;
   flex-direction: column;
   row-gap: 0.8rem;
-
 }
 
 .banner-flot h3 {
@@ -495,4 +494,5 @@ export default {
   background-color: transparent;
   border: none;
   cursor: pointer;
-}</style>
+}
+</style>
