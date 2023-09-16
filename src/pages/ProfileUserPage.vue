@@ -27,7 +27,7 @@
           rows="1"
           placeholder="Haz una publicación..."
         ></textarea>
-        <PaperAirplaneIcon class="create-publication-button" />
+        <PaperAirplaneIcon class="create-publication-button" @click.prevent="addPublication" />
       </div>
 
       <!-- Publication -->
@@ -63,7 +63,7 @@ import {  PaperAirplaneIcon } from '@heroicons/vue/24/solid';
 import NavBar from '@/components/NavBar.vue';
 import useProfilePublic from "@/composables/useProfilePublic"
 
-const { handleGetDataProfilePublic } = useProfilePublic()
+const { handleGetDataProfilePublic, handleAddPublication } = useProfilePublic()
 
 export default {
   async mounted() {
@@ -101,6 +101,14 @@ export default {
       this.$refs.myTextArea.style.height = 'auto';
       this.$refs.myTextArea.style.height = this.$refs.myTextArea.scrollHeight + 'px';
     },
+    async addPublication() {
+      const response = await handleAddPublication(this.textContent)
+      this.dataPublic.posts.push({
+        text: response.text,
+        avatar: response.avatar,
+        username: response.username
+      })
+    }
   }
 }
 </script>
