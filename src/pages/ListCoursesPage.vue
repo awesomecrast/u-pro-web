@@ -7,10 +7,12 @@
           :src="'https://academia.urbisfx.com' + capitulo.miniatura"
           alt="img"
         /> -->
-        <img :src="capitulo.miniatura" alt="img" />
+        <img :src="capitulo.miniatura" :style="{'filter': capitulo.blocked == true ? 'grayscale(1)': 'none'}" alt="img" />
+        <img v-if="capitulo.blocked" class="lock-img" src="/static/lock.png" alt="img" />
+
         <div class="additional-info">
           <h2>{{ capitulo.nombre }}</h2>
-          <p>Descripcion</p>
+          <p>{{ capitulo.descripcion }}</p>
         </div>
       </div>
     </div>
@@ -21,7 +23,7 @@
 <script lang="js">
 import NavBar from "@/components/NavBar.vue"
 import FooterH from "@/components/FooterH.vue"
-import useCourses from "@/composables/useCourses"
+import useClasses from "@/composables/useClasses"
 
 import "swiper/css";
 import "swiper/css/navigation";
@@ -33,24 +35,24 @@ export default {
   },
   async mounted() {
     try {
-      const { handleGetAllCourses} = useCourses();
-      const data = await handleGetAllCourses()
-      this.cursos = data.cursos[0].capitulos
+      const { handleGetDataClasses } = useClasses();
+      const data = await handleGetDataClasses(this.$route.params.id);
+      this.cursos = data.clases.map((el,index) => {
+        if(index != 0){
+          el.blocked = true;
+        }else{
+          el.blocked = false;
+        }
+        return el;
+      })
       this.banner = data.banner
       this.menu = data.menu
-    } catch(error) {
+    } catch (error) {
       console.error('Error al obtener los cursos:', error);
     }
   },
   data() {
-      return {
-      certificados: [
-        'Certificado 1',
-        'Certificado 2',
-        'Certificado 3',
-        'Certificado 4',
-        'Certificado 5',
-      ],
+    return {
       courses: [],
       banner: {},
       menu: []
@@ -60,15 +62,8 @@ export default {
     redirectToCourse(course) {
       console.log(course)
 
-      if (course.nodo) {
-        window.open(`https://academia.urbisfx.com/node/mod/${course.id}`, '_self');
-      } else if (course.curso) {
-        window.open(`https://academia.urbisfx.com/cur/${course.id}`, '_self');
-      } else if (course.modulo) {
-        window.open(`https://academia.urbisfx.com/mod/${course.id}`, '_self');
-      } else {
-        window.open(`https://academia.urbisfx.com/cap/${course.id}`, '_self');
-      }
+      window.open(`https://academia.urbisfx.com/class/${course.id}`, '_self');
+
     }
   }
 };
@@ -84,6 +79,11 @@ export default {
   z-index: 2;
   padding-inline: 0.75rem;
   width: 100%;
+}
+.lock-img{
+  position: absolute;
+  height: 70px !important;
+  width: 70px !important;
 }
 
 @media (max-width: 950px) {

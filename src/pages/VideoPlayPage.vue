@@ -2,30 +2,19 @@
   <div style="background-color: #0b0d1b !important; width: 100%; height: 5rem; overflow: hidden">
     <NavBar :banner="banner" :menu="menu" :showOnlyNav="true" />
   </div>
-  <div
-    class=""
-    :style="{
-      'background-image': `url('https://academia.urbisfx.com/${player_cap.miniatura}')`,
-      'background-position': 'center',
-      'background-size': 'cover',
-    }"
-  >
+  <div class="" :style="{
+    'background-image': `url('https://academia.urbisfx.com/${player_cap.miniatura}')`,
+    'background-position': 'center',
+    'background-size': 'cover',
+  }">
     <div class="content" style="backdrop-filter: blur(25px); background-color: rgba(0, 0, 0, 0.65)">
       <div class="content-max">
         <div class="content-video">
           <div style="width: 100%">
             <!-- width="640"
               height="264" -->
-            <video
-              v-if="player_cap.es_audio == false"
-              id="vid1"
-              ref="videoPlayer"
-              class="video-js vjs-default-skin video-custom"
-              width="840"
-              height="464"
-              controls
-              preload="auto"
-            ></video>
+            <video v-if="player_cap.es_audio == false" id="vid1" ref="videoPlayer"
+              class="video-js vjs-default-skin video-custom" width="840" height="464" controls preload="auto"></video>
             <audio v-if="player_cap.es_audio == true" class="audio-custom" controls style="width: 640px">
               <source :src="player_cap.audio_url" type="audio/mpeg" />
               Your browser does not support the audio element.
@@ -35,34 +24,25 @@
             <div class="video-data-top">
               <h2>Es Normal que Muchos se Rindan</h2>
               <div class="video-data-next">
-                <h3>Siguiente</h3>
-                <ChevronRightIcon class="icon-next" />
+                <!-- <h3>Siguiente</h3> -->
+                <img v-if="player_cap.siguiente" @click="NextCap"
+                  :src="require('../../public/circle.svg')" style="width: 2.5rem;" class="icon-next" />
               </div>
             </div>
             <div class="video-data-bottom">
               <div class="video-stars">
-                <component
-                  v-for="(star, index) in stars"
-                  :key="index"
-                  :is="star ? 'StarIcon' : 'StartIconOutline'"
-                  @click="rateVideo(index + 1)"
-                  class="icon-start-outline"
-                />
+                <component v-for="(star, index) in stars" :key="index" :is="star ? 'StarIcon' : 'StartIconOutline'"
+                  @click="rateVideo(index + 1)" class="icon-start-outline" />
               </div>
               <div class="video-button">
-                <button
-                  @click="likePlayer"
-                  :style="isLike == true && 'background: linear-gradient(180deg, #32a3fb, #1455ec);'"
-                >
+                <button @click="likePlayer"
+                  :style="isLike == true && 'background: linear-gradient(180deg, #32a3fb, #1455ec);'">
                   <HandThumbUpIcon class="icon" :style="isLike == true && 'color: #fff'" />
                 </button>
                 <button @click="showModal = true">
                   <!-- <ShareIcon class="icon" /> -->
-                  <img
-                    style="width: 1.5rem"
-                    :src="require('../../public/share-icon.svg')"
-                    alt="descripción de la imagen"
-                  />
+                  <img style="width: 1.5rem" :src="require('../../public/share-icon.svg')"
+                    alt="descripción de la imagen" />
                 </button>
               </div>
             </div>
@@ -75,24 +55,14 @@
             </div>
             <div class="coment">
               <div class="create-coment" v-if="showCreateComment">
-                <textarea
-                  @keydown.enter.prevent
-                  @input="adjustTextAreaHeight"
-                  ref="myTextArea"
-                  v-model="textContent"
-                  rows="1"
-                  placeholder="Escribe un comentario"
-                ></textarea>
-                <button class="create-coment-button">Comentar</button>
+                <textarea @keydown.enter.prevent @input="adjustTextAreaHeight" ref="myTextArea" v-model="textContent"
+                  rows="1" placeholder="Escribe un comentario"></textarea>
+                <button class="create-coment-button" @click="() => createCommentPlayerCus()">Comentar</button>
               </div>
               <div class="coment-user" v-for="comment in player_comentarios" v-bind:key="comment.id">
                 <div class="coment-user-info">
                   <!-- <UserIcon class="icon-user" /> -->
-                  <img
-                    style="width: 2.5rem"
-                    :src="'https://academia.urbisfx.com/' + comment.user_avatar"
-                    alt="avatar"
-                  />
+                  <img style="width: 2.5rem" :src="'https://academia.urbisfx.com/' + comment.user_avatar" alt="avatar" />
                   <p>@{{ comment.username }}</p>
                 </div>
                 <div class="coment-user-text">
@@ -103,14 +73,12 @@
                     <button @click="textContentResponse[comment.id].show = !textContentResponse[comment.id].show">
                       Responder
                     </button>
-                    <button :class="comment.dio_like === true ? color : '#3799e5'">{{ comment.likes }} Likes</button>
+                    <button :style="comment.dio_like === true ? { 'color': '#3799e5' } : {}"
+                      @click="() => onLikeComment(comment.id)">{{ comment.likes }} Likes</button>
                   </div>
                   <div v-if="textContentResponse[comment.id].show" style="display: flex; gap: 1rem">
-                    <input
-                      v-model="textContentResponse[comment.id].text"
-                      type="text"
-                      placeholder="Responder comentario"
-                    />
+                    <input v-model="textContentResponse[comment.id].text" type="text"
+                      placeholder="Responder comentario" />
                     <button @click="createResponseCommentPlayerCus(comment.id)" class="create-coment-button">
                       Responder
                     </button>
@@ -120,11 +88,8 @@
                 <div class="coment-response" v-for="response in comment.respuestas" v-bind:key="response">
                   <div class="coment-user-info">
                     <!-- <UserIcon class="icon-user" /> -->
-                    <img
-                      style="width: 2.5rem"
-                      :src="'https://academia.urbisfx.com/' + response.user_avatar"
-                      alt="avatar"
-                    />
+                    <img style="width: 2.5rem" :src="'https://academia.urbisfx.com/' + response.user_avatar"
+                      alt="avatar" />
                     <p>@{{ response.username }}</p>
                   </div>
                   <div class="coment-user-text">
@@ -139,7 +104,8 @@
           <div class="courses-title">
             <h2>Cursos relacionados</h2>
           </div>
-          <div class="courses-item" v-for="rel in player_relacionados" v-bind:key="rel.id">
+          <div class="courses-item" @click="() => irARelacionado(rel.id)" v-for="rel in player_relacionados"
+            v-bind:key="rel.id">
             <img :src="rel.miniatura" alt="course" />
           </div>
         </div>
@@ -151,15 +117,9 @@
         </div>
         <div class="coment">
           <div class="create-coment" v-if="showCreateComment">
-            <textarea
-              @keydown.enter.prevent
-              @input="adjustTextAreaHeight"
-              ref="myTextArea"
-              v-model="textContent"
-              rows="1"
-              placeholder="Escribe un comentario"
-            ></textarea>
-            <button class="create-coment-button">Comentar</button>
+            <textarea @keydown.enter.prevent @input="adjustTextAreaHeight" ref="myTextArea" v-model="textContent" rows="1"
+              :disabled="working" placeholder="Escribe un comentario"></textarea>
+            <button class="create-coment-button" @click="() => createCommentPlayerCus()">Comentar</button>
           </div>
           <div class="coment-user" v-for="comment in player_comentarios" v-bind:key="comment.id">
             <div class="coment-user-info">
@@ -175,7 +135,8 @@
                 <button @click="textContentResponse[comment.id].show = !textContentResponse[comment.id].show">
                   Responder
                 </button>
-                <button :class="comment.dio_like === true ? color : '#3799e5'">{{ comment.likes }} Likes</button>
+                <button :style="comment.dio_like === true ? { 'color': '#3799e5' } : {}"
+                  @click="() => onLikeComment(comment.id)">{{ comment.likes }} Likes</button>
               </div>
               <div v-if="textContentResponse[comment.id].show" style="display: flex; gap: 1rem">
                 <input v-model="textContentResponse[comment.id].text" type="text" placeholder="Responder comentario" />
@@ -204,7 +165,8 @@
           <h2>Cursos relacionados</h2>
         </div>
         <div class="courses-list">
-          <div class="courses-item" v-for="rel in player_relacionados" v-bind:key="rel.id">
+          <div class="courses-item" @click="() => irARelacionado(rel.id)" v-for="rel in player_relacionados"
+            v-bind:key="rel.id">
             <img :src="rel.miniatura" alt="course" />
           </div>
         </div>
@@ -255,6 +217,7 @@ import { HandThumbUpIcon, ShareIcon, ChevronRightIcon, StarIcon } from '@heroico
 import { StarIcon as StartIconOutline, UserIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import FooterH from '@/components/FooterH.vue';
 
+
 const { handleGetPlayer, createCommentInPlayer, createCommentResponseInPlayer, sendLikeComment, handleGetAllCourses } = useCourses()
 
 
@@ -287,7 +250,7 @@ export default {
     this.player_id = this.$route.params.id;
     this.currentUrl = window.location.href;
     this.username = document.querySelector('meta[name=username]').content
-    this.avatar = document.querySelector('meta[name=avatar]')
+    this.avatar = document.querySelector('meta[name=avatar]').content
     this.isLike = JSON.parse(localStorage.getItem(`like-cap-${this.player_id}`))
     this.currentRating = JSON.parse(localStorage.getItem(`cap-${this.player_id}`))
     this.stars = this.stars.map((star, index) => index < this.currentRating);
@@ -303,9 +266,10 @@ export default {
       const dataPlayer = await handleGetPlayer(this.player_id)
       this.player_cap = dataPlayer.cap
       dataPlayer.comentarios.map(comentario => {
-        this.showResponseComment[comentario.id] = { show: false, text: '' }
+        this.textContentResponse[comentario.id] = { show: false, text: '' }
       })
-      this.player_comentarios = dataPlayer.comentarios.map
+      this.player_comentarios = dataPlayer.comentarios
+
       this.player_relacionados = dataPlayer.relacionados
 
       const data = await handleGetAllCourses()
@@ -333,7 +297,7 @@ export default {
       textContentResponse: {},
       username: null,
       avatar: "",
-
+      working: false,
       showCreateComment: false,
       showResponseComment: {},
       player_id: "",
@@ -357,11 +321,17 @@ export default {
         }
       }
     }
-},
+  },
   methods: {
     likePlayer() {
       this.isLike = !this.isLike
       localStorage.setItem(`like-cap-${this.player_id}`, this.isLike)
+    },
+    NextCap(){
+      window.location.href = '/play/' + this.player_cap.siguiente
+    },
+    irARelacionado(id) {
+      window.location.href = '/play/' + id
     },
     rateVideo(rating) {
       this.currentRating = rating;
@@ -382,7 +352,7 @@ export default {
         navigator.share({
           title: 'Título',
           text: 'Texto para compartir',
-          url: 'https://ejemplo.com',
+          url: window.location.href,
         })
           .then(() => {
             // Contenido compartido exitosamente
@@ -399,27 +369,37 @@ export default {
       this.$refs.myTextArea.style.height = this.$refs.myTextArea.scrollHeight + 'px';
     },
     async createCommentPlayerCus() {
-      if (this.textContent === "" && this.textContent.trim() === "") {
-        return
+      if ((this.textContent === "" && this.textContent.trim() === "") || this.working == true) {
+        return;
       }
+      this.working = true;
       const response = await createCommentInPlayer(this.player_id, this.textContent)
-      this.textContent = ""
+      this.textContent = "";
+      this.textContentResponse[response.id] = { show: false, text: '' };
+      this.player_comentarios.unshift({ id: response.id, text: response.comentario, username: this.username, avatar: this.avatar })
       console.log(response)
+      this.working = false;
     },
     async createResponseCommentPlayerCus(id) {
-      if (this.textContentResponse === "" && this.textContentResponse.trim() === "") {
+      if (this.textContentResponse[id].text === "" && this.textContentResponse[id].text.trim() === "") {
         return
       }
       const response = await createCommentResponseInPlayer(id, this.textContentResponse[id].text)
+      this.player_comentarios.map((el, ind) => {
+        if (this.player_comentarios[ind].id == id) {
+          this.player_comentarios[ind].respuestas.unshift({ id: response.id, text: response.respuesta, username: this.username, avatar: this.avatar })
+        }
+      })
       this.textContentResponse[id].text = ""
       console.log(response)
     },
     async onLikeComment(id) {
+      this.working = true;
       const response = await sendLikeComment(id)
       if (response?.ok) {
         if (response?.creado) {
           // agrega like
-          this.comentarios = this.player_comentarios.map((comentario) => {
+          this.player_comentarios = this.player_comentarios.map((comentario) => {
             if (comentario.id === id) {
               comentario.likes += 1
               comentario.dio_like = true
@@ -428,7 +408,7 @@ export default {
           })
         } else {
           // quita like
-          this.comentarios = this.player_comentarios.map((comentario) => {
+          this.player_comentarios = this.player_comentarios.map((comentario) => {
             if (comentario.id === id) {
               comentario.likes -= 1
               comentario.dio_like = false
@@ -437,6 +417,8 @@ export default {
           })
         }
       }
+      this.working = false;
+
     }
   }
 }
@@ -482,7 +464,7 @@ export default {
 }
 
 .video-data-next:hover,
-.video-data-next:hover > svg {
+.video-data-next:hover>svg {
   color: #de9c39 !important;
 }
 
@@ -1002,5 +984,4 @@ input[type='text'] {
 
 .copy-button:hover {
   background-color: #0056b3;
-}
-</style>
+}</style>

@@ -17,7 +17,7 @@
     <meta name="username" content="{% if request.cuentaImportada %}{{request.cuentaImportada.username}}{% endif %}" />
     <meta
       name="avatar"
-      content="{% if request.cuentaImportada and request.cuentaImportada.avatar  %}{{request.cuentaImportada.avatar.url}}{% endif %}"
+      content="{% if request.cuentaImportada and request.cuentaImportada.avatar  %}{{request.cuentaImportada.avatar.url}}{% else %}/static/assets/img/user.svg{% endif %}"
     />
     <meta name="menu" content="{{request.menu_json}}" />
 

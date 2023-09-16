@@ -17,6 +17,11 @@ const routes = [
     component: () => import('./pages/ProfileUserPage.vue'),
   },
   {
+    path: '/next',
+    name: 'nextfeed',
+    component: () => import('./pages/NextFeed.vue'),
+  },
+  {
     path: '/play/:id',
     alias: '/player/:id',
     name: 'play-video',
